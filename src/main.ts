@@ -11,7 +11,7 @@ import http from 'http';
  * Get port from environment and store in Express.
  */
 
-const port = normalizePort(process.env.PORT || '3000');
+const port: string = normalizePort(process.env.PORT || '3000');
 app.set('port', port);
 
 /**
@@ -53,27 +53,32 @@ function normalizePort(val: any): any {
  */
 
 function onError(error: any) {
-  if (error.syscall !== 'listen') {
-    throw error;
-  }
+  console.error('----- ----- ----- onError() -----');
+  // if (error.syscall !== 'listen') {
+  //   throw error;
+  // }
 
-  var bind = typeof port === 'string'
-    ? 'Pipe ' + port
-    : 'Port ' + port;
+  // console.log("....", typeof port);
+  // var bind = typeof port === 'string'
+  //   ? 'Pipe ' + port
+  //   : 'Port ' + port;
 
-  // handle specific listen errors with friendly messages
-  switch (error.code) {
-    case 'EACCES':
-      console.error(bind + ' requires elevated privileges');
-      process.exit(1);
-      break;
-    case 'EADDRINUSE':
-      console.error(bind + ' is already in use');
-      process.exit(1);
-      break;
-    default:
-      throw error;
-  }
+  // // handle specific listen errors with friendly messages
+  // switch (error.code) {
+  //   case 'EACCES':
+  //     console.error(bind + ' requires elevated privileges');
+  //     process.exit(1);
+  //     break;
+  //   case 'EADDRINUSE':
+  //     console.error(bind + ' is already in use');
+  //     process.exit(1);
+  //     break;
+  //   default:
+  //     throw error;
+  // }
+  // throw error;
+  console.error('Error: ', error)
+  console.error('---')
 }
 
 /**
@@ -81,9 +86,10 @@ function onError(error: any) {
  */
 
 function onListening() {
-  const addr: any = server.address();
-  const bind = typeof addr === 'string'
-    ? 'pipe ' + addr
-    : 'port ' + addr.port;
-  console.debug('Listening on ' + bind);
+  // const addr: any = server.address();
+  // const bind = typeof addr === 'string'
+  //   ? 'pipe ' + addr
+  //   : 'port ' + addr.port;
+  // console.debug('Listening on ' + bind);
+  console.debug('Listening on 3000');
 }
