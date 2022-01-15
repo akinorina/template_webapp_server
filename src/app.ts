@@ -3,10 +3,15 @@ import express from 'express'
 import path from 'path'
 import cookieParser from 'cookie-parser'
 
-import indexRouter from './routes/index'
-import usersRouter from './routes/users'
+// systemロガー
+import systemLogger from './lib/log/systemLogger'
+// accessロガー
+import accessLogger from './lib/log/accessLogger'
 
-var app = express();
+// Routings
+import indexRouter from './routes/index'
+
+const app = express();
 
 // view engine setup
 app.set('views', path.join(__dirname, '../views'));
@@ -17,8 +22,14 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, '../public')));
 
+// アクセス・ロガー 設定
+app.use(accessLogger())
+
+// Routings
 app.use('/', indexRouter);
-app.use('/users', usersRouter);
+
+// systemLogger をExpressに実装
+app.use(systemLogger())
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
