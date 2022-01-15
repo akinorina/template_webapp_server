@@ -3,13 +3,22 @@ import express from 'express'
 import path from 'path'
 import cookieParser from 'cookie-parser'
 
-// systemロガー
+// system logger
 import systemLogger from './lib/log/systemLogger'
-// accessロガー
+// access logger
 import accessLogger from './lib/log/accessLogger'
+// console logger
+import consoleLogger from './lib/log/consoleLogger'
+
+// lib
+import ServerConfig from './lib/ServerConfig'
 
 // Routings
 import indexRouter from './routes/index'
+
+// template_webapp サーバー設定
+const serverConfig = new ServerConfig();
+consoleLogger.debug('name:', serverConfig.data.app_name);
 
 const app = express();
 
