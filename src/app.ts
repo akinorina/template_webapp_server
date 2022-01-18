@@ -30,6 +30,8 @@ import samplesRouter from './routes/samples'
 import authRouter from './routes/auth'
 import managementIndexRouter from './routes/management/index'
 import managementUserRouter from './routes/management/user'
+// Routings for API
+import apiAuthRouter from './routes/api/auth'
 import apiUsersRouter from './routes/api/users'
 
 const app = express();
@@ -75,6 +77,8 @@ try {
   app.use('/auth', authRouter);
   app.use('/management', managementIndexRouter);
   app.use('/management/user', managementUserRouter);
+  // Routings for API
+  app.use('/api/auth', apiAuthRouter);
   app.use('/api/users', apiUsersRouter);
 
   // systemLogger をExpressに実装

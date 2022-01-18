@@ -22,6 +22,7 @@ import express from 'express'
 
 // libs
 import { getAllParameters } from '../../lib/libServer'
+import { isAuthenticatedForApi } from '../../lib/libAuth'
 
 // DB access by TypeORM
 import { getConnection, getRepository, Like } from "typeorm";
@@ -36,7 +37,7 @@ const usersRouter = express.Router()
 // ------------------------------------------------------------------------------------------
 // #index
 // ------------------------------------------------------------------------------------------
-usersRouter.get('/', async function (req, res, next) {
+usersRouter.get('/', isAuthenticatedForApi, async function (req, res, next) {
   // consoleLogger.info('--- run /api/users #index --- start. ---')
 
   // (1). パラメータ取得
@@ -76,7 +77,7 @@ usersRouter.get('/', async function (req, res, next) {
 // ------------------------------------------------------------------------------------------
 // #create
 // ------------------------------------------------------------------------------------------
-usersRouter.post('/', async function (req, res, next) {
+usersRouter.post('/', isAuthenticatedForApi, async function (req, res, next) {
   // consoleLogger.info('--- run /api/users/ #create --- start. ---')
 
   // (1). パラメータ取得
@@ -106,7 +107,7 @@ usersRouter.post('/', async function (req, res, next) {
 // #show
 //   ID が該当するデータがない場合 data: null を返す
 // ------------------------------------------------------------------------------------------
-usersRouter.get('/:id', async function (req, res, next) {
+usersRouter.get('/:id', isAuthenticatedForApi, async function (req, res, next) {
   // consoleLogger.info('--- run /api/users/:id #show --- start. ---')
 
   // (1). パラメータ取得
@@ -131,7 +132,7 @@ usersRouter.get('/:id', async function (req, res, next) {
 // ------------------------------------------------------------------------------------------
 // #update
 // ------------------------------------------------------------------------------------------
-usersRouter.put('/:id', async function (req, res, next) {
+usersRouter.put('/:id', isAuthenticatedForApi, async function (req, res, next) {
   // consoleLogger.info('--- run /api/users/:id #update --- start. ---')
 
   // (1). パラメータ取得
@@ -179,7 +180,7 @@ usersRouter.put('/:id', async function (req, res, next) {
 // ------------------------------------------------------------------------------------------
 // #update (patch) 処理内容は #update と同様
 // ------------------------------------------------------------------------------------------
-usersRouter.patch('/:id', async function (req, res, next) {
+usersRouter.patch('/:id', isAuthenticatedForApi, async function (req, res, next) {
   // consoleLogger.info('--- run /api/users/:id #update (patch) --- start. ---')
 
   // (1). パラメータ取得
@@ -226,7 +227,7 @@ usersRouter.patch('/:id', async function (req, res, next) {
 // ------------------------------------------------------------------------------------------
 // #delete
 // ------------------------------------------------------------------------------------------
-usersRouter.delete('/:id', async function (req, res, next) {
+usersRouter.delete('/:id', isAuthenticatedForApi, async function (req, res, next) {
   // consoleLogger.info('--- run /api/users/:id #delete --- start. ---')
 
   // (1). パラメータ取得
