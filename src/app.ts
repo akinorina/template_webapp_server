@@ -3,6 +3,9 @@ import express from 'express'
 import path from 'path'
 import cookieParser from 'cookie-parser'
 
+// DB access by TypeORM
+import { createConnection, Connection } from 'typeorm';
+
 // system logger
 import systemLogger from './lib/log/systemLogger'
 // access logger
@@ -17,12 +20,17 @@ import ServerConfig from './lib/ServerConfig'
 
 // Routings
 import indexRouter from './routes/index'
+import managementIndexRouter from './routes/management/index'
+import managementUserRouter from './routes/management/user'
 
 const app = express();
 
 try {
   // サーバー設定
   const serverConfig = new ServerConfig();
+
+  // make an DB connection.
+  createConnection('default').then((connection: Connection) => {
 
   // view engine setup
   app.set('views', path.join(__dirname, '../views'));
@@ -38,6 +46,8 @@ try {
 
   // Routings
   app.use('/', indexRouter);
+  app.use('/management/', managementIndexRouter);
+  app.use('/management/user/', managementUserRouter);
 
   // systemLogger をExpressに実装
   app.use(systemLogger())
@@ -57,6 +67,8 @@ try {
     res.status(err.status || 500);
     res.render('error');
   });
+
+  }).catch(error => { throw error });
 
   //
 } catch (err: any) {

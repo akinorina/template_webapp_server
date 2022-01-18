@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>{{ title }}</title>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+  </head>
+  <body>
+    <div>
+      {% if (login_user.id == null) %}
+      <div><a href="/auth/login">login</a></div>
+      {% else %}
+      <div>{{ login_user.id }} : {{ login_user.name }} | <a href="/auth/logout">logout</a></div>
+      {% endif %}
+    </div>
+    <div>
+      {% block body %}{% endblock %}
+    </div>
+  </body>
+</html>

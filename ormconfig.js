@@ -1,4 +1,4 @@
-export default {
+module.exports = {
   "name": process.env.DB_NAME,
   "type": process.env.DB_TYPE,
   "host": process.env.DB_HOST,

@@ -22,6 +22,7 @@ RUN npm install
 
 # アプリケーションのソースをバンドルする
 COPY . .
+COPY .env.production .env
 
 # ビルド
 RUN npm run build

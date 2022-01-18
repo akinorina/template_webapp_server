@@ -1,10 +1,15 @@
-import express from 'express';
+/**
+ * router - index (Top page)
+ */
 
-const router = express.Router();
+import express from 'express'
 
-// GET home page.
+const router = express.Router()
+
 router.get('/', function(req: express.Request, res: express.Response, next: express.NextFunction) {
-  res.render('index', { title: 'Express' });
-});
+  // render page.
+  const viewValues = {}
+  res.render('index', viewValues)
+})
 
 export default router

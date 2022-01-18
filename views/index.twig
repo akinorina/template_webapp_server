@@ -1,6 +1,10 @@
-{% extends 'layout.twig' %}
+{% extends './layouts/normal.twig' %}
 
 {% block body %}
-  <h1>{{title}}</h1>
-  <p>Welcome to {{title}}</p>
+  <h1>template_webapp_server</h1>
+  <p>top page</p>
+
+  <ul>
+    <li><a href="/management">管理画面</a></li>
+  </ul>
 {% endblock %}
