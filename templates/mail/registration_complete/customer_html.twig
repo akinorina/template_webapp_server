@@ -1,0 +1,58 @@
+{% extends './layout.twig' %}
+
+{% block body %}お問合せ情報{% endblock %}
+
+
+
+{% block head %}
+<style>
+
+.regist {
+  border: 1px #e0e0e0 solid;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+}
+.regist th,
+.regist td {
+  border: 1px #e0e0e0 solid;
+  padding: 5px;
+}
+
+</style>
+{% endblock %}
+
+
+
+{% block body %}
+<div class="container">
+<p>{{ name }}様</p>
+</div>
+
+<div class="container">
+<p>前略　ご登録いただき、誠にありがとうございます。</p>
+<p>ご登録いただいた内容は以下の通りです。</p>
+</div>
+
+<div class="container">
+<table class="regist">
+<tr><td>お問合わせ日時</td><td>{{ createdAt }}</td></tr>
+<tr><td>ご氏名</td><td>{{ name }}</td></tr>
+<tr><td>ご氏名よみがな</td><td>{{ nameKana }}</td></tr>
+<tr><td>メールアドレス</td><td>{{ email }}</td></tr>
+<tr><td>ユーザー種別</td><td>{{ userType }}</td></tr>
+</table>
+</div>
+
+<div class="container">
+<p>ご登録メールアドレスとパスワードでログインいただけます。</p>
+</div>
+
+<div class="container">
+<p>今後とも、よろしくお願いいたします。</p>
+</div>
+
+<div class="container">
+<div>事業主</div>
+</div>
+
+{% endblock %}

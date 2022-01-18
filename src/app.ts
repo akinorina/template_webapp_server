@@ -44,7 +44,7 @@ try {
   createConnection('default').then((connection: Connection) => {
 
   // view engine setup
-  app.set('views', path.join(__dirname, '../views'));
+  app.set('views', path.join(__dirname, '../templates/views'));
   app.set('view engine', 'twig');
 
   app.use(express.json());
