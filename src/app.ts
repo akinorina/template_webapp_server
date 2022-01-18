@@ -6,6 +6,12 @@ import cookieParser from 'cookie-parser'
 // DB access by TypeORM
 import { createConnection, Connection } from 'typeorm';
 
+// session
+import session from 'express-session';
+
+// Passport
+import passport from './passport';
+
 // system logger
 import systemLogger from './lib/log/systemLogger'
 // access logger
@@ -20,6 +26,7 @@ import ServerConfig from './lib/ServerConfig'
 
 // Routings
 import indexRouter from './routes/index'
+import authRouter from './routes/auth'
 import managementIndexRouter from './routes/management/index'
 import managementUserRouter from './routes/management/user'
 import apiUsersRouter from './routes/api/users'
@@ -41,6 +48,22 @@ try {
   app.use(express.urlencoded({ extended: false }));
   app.use(cookieParser());
   app.use(express.static(path.join(__dirname, '../public')));
+
+  // Session
+  app.use(session({
+    secret: 'secret',
+    resave: true,
+    saveUninitialized: false,
+    cookie: {
+      httpOnly: true,
+      secure: false,
+      maxAge: 1000 * 60 * 60 * 1
+    }
+  }))
+
+  // Passport
+  app.use(passport.initialize())
+  app.use(passport.session())
 
   // アクセス・ロガー 設定
   app.use(accessLogger())

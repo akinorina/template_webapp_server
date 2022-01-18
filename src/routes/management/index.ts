@@ -5,6 +5,9 @@
 // Express
 import express from 'express'
 
+// libAuth
+import { isAuthenticated } from '../../lib/libAuth'
+
 // console logger
 // import consoleLogger from '../../lib/log/consoleLogger'
 
@@ -12,9 +15,9 @@ import express from 'express'
 const router = express.Router()
 
 // 管理画面TOP
-router.get('/', function (req: express.Request, res: express.Response, next: express.NextFunction) {
+router.get('/', isAuthenticated, function (req: express.Request, res: express.Response, next: express.NextFunction) {
   // view data.
-  const viewValues = {}
+  const viewValues = { login_user: req.user }
   res.render('management/index', viewValues)
 })
 

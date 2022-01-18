@@ -13,6 +13,7 @@ import { User } from '../../entity/User'
 // import consoleLogger from '../../lib/log/consoleLogger'
 
 // libs
+import { isAuthenticated } from '../../lib/libAuth'
 import { getAllParameters } from '../../lib/libServer'
 
 // router
@@ -21,7 +22,7 @@ const router = express.Router()
 // ---
 // 管理画面 - ユーザー - TOP
 // ---
-router.get('/', async function (req: express.Request, res: express.Response, next: express.NextFunction) {
+router.get('/', isAuthenticated, async function (req: express.Request, res: express.Response, next: express.NextFunction) {
   // パラメータ取得
   const parameters = getAllParameters(req)
   // consoleLogger.debug('parameters', parameters)
@@ -37,23 +38,23 @@ router.get('/', async function (req: express.Request, res: express.Response, nex
   // consoleLogger.debug('--- users: ', users)
 
   // render page.
-  const viewValues = { Users: users }
+  const viewValues = { login_user: req.user, Users: users }
   res.render('management/user/index', viewValues)
 })
 
 // ---
 // 管理画面 - ユーザー - 新規作成画面表示
 // ---
-router.get('/new', function (req: express.Request, res: express.Response, next: express.NextFunction) {
+router.get('/new', isAuthenticated, function (req: express.Request, res: express.Response, next: express.NextFunction) {
   // render page.
-  const viewValues = {}
+  const viewValues = { login_user: req.user }
   res.render('management/user/new', viewValues)
 })
 
 // ---
 // 管理画面 - ユーザー - 詳細
 // ---
-router.get('/:id', async function (req: express.Request, res: express.Response, next: express.NextFunction) {
+router.get('/:id', isAuthenticated, async function (req: express.Request, res: express.Response, next: express.NextFunction) {
   // パラメータ取得
   const parameters = getAllParameters(req)
   // consoleLogger.debug('parameters', parameters)
@@ -66,14 +67,14 @@ router.get('/:id', async function (req: express.Request, res: express.Response, 
   // consoleLogger.debug('--- user: ', user)
 
   // render page.
-  const viewValues = { User: user[0] }
+  const viewValues = { login_user: req.user, User: user[0] }
   res.render('management/user/detail', viewValues)
 })
 
 // ---
 // 管理画面 - ユーザー - 編集画面への遷移
 // ---
-router.get('/:id/edit', async function (req: express.Request, res: express.Response, next: express.NextFunction) {
+router.get('/:id/edit', isAuthenticated, async function (req: express.Request, res: express.Response, next: express.NextFunction) {
   // パラメータ取得
   const parameters = getAllParameters(req)
   // consoleLogger.debug('parameters', parameters)
@@ -86,14 +87,14 @@ router.get('/:id/edit', async function (req: express.Request, res: express.Respo
   // consoleLogger.debug('--- user: ', user)
 
   // render page.
-  const viewValues = { User: user[0] }
+  const viewValues = { login_user: req.user, User: user[0] }
   res.render('management/user/edit', viewValues)
 })
 
 // ---
 // 管理画面 - ユーザー - 削除画面への遷移
 // ---
-router.get('/:id/delete', async function (req, res, next) {
+router.get('/:id/delete', isAuthenticated, async function (req, res, next) {
   // パラメータ取得
   const parameters = getAllParameters(req)
   // consoleLogger.debug('parameters', parameters)
@@ -106,14 +107,14 @@ router.get('/:id/delete', async function (req, res, next) {
   // consoleLogger.debug('--- user: ', user)
 
   // render page.
-  const viewValues = { User: user[0] }
+  const viewValues = { login_user: req.user, User: user[0] }
   res.render('management/user/delete', viewValues)
 })
 
 // ---
 // 管理画面 - ユーザー - 編集画面からSUBMIT (新規)
 // ---
-router.post('/', async function (req, res, next) {
+router.post('/', isAuthenticated, async function (req, res, next) {
   // パラメータ取得
   const parameters = getAllParameters(req)
   // consoleLogger.debug('parameters', parameters)
@@ -133,14 +134,14 @@ router.post('/', async function (req, res, next) {
   // consoleLogger.debug('savedUser: ', savedUser)
 
   // render page.
-  const viewValues = { User: savedUser }
+  const viewValues = { login_user: req.user, User: savedUser }
   res.render('management/user/detail', viewValues)
 })
 
 // ---
 // 管理画面 - ユーザー - 編集画面からSUBMIT (更新)
 // ---
-router.post('/:id', async function (req, res, next) {
+router.post('/:id', isAuthenticated, async function (req, res, next) {
   // パラメータ取得
   const parameters = getAllParameters(req)
   // consoleLogger.debug('parameters', parameters)
@@ -160,14 +161,14 @@ router.post('/:id', async function (req, res, next) {
   // consoleLogger.debug('savedUser: ', savedUser)
 
   // render page.
-  const viewValues = { User: savedUser }
+  const viewValues = { login_user: req.user, User: savedUser }
   res.render('management/user/detail', viewValues)
 })
 
 // ---
 // 管理画面 - ユーザー - 削除画面からSUBMIT (削除)
 // ---
-router.post('/:id/delete', async function (req, res, next) {
+router.post('/:id/delete', isAuthenticated, async function (req, res, next) {
   // パラメータ取得
   const parameters = getAllParameters(req)
   // consoleLogger.debug('parameters', parameters)
