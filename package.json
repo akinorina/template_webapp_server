@@ -15,7 +15,10 @@
     "http-errors": "~1.6.3",
     "log4js": "^6.3.0",
     "morgan": "~1.9.1",
-    "twig": "~0.10.3"
+    "mysql2": "^2.3.3",
+    "reflect-metadata": "^0.1.13",
+    "twig": "~0.10.3",
+    "typeorm": "^0.2.41"
   },
   "devDependencies": {
     "@types/cookie-parser": "^1.4.2",
