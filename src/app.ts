@@ -26,6 +26,7 @@ import ServerConfig from './lib/ServerConfig'
 
 // Routings
 import indexRouter from './routes/index'
+import samplesRouter from './routes/samples'
 import authRouter from './routes/auth'
 import managementIndexRouter from './routes/management/index'
 import managementUserRouter from './routes/management/user'
@@ -70,6 +71,8 @@ try {
 
   // Routings
   app.use('/', indexRouter);
+  app.use('/samples', samplesRouter);
+  app.use('/auth', authRouter);
   app.use('/management', managementIndexRouter);
   app.use('/management/user', managementUserRouter);
   app.use('/api/users', apiUsersRouter);
