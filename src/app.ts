@@ -22,6 +22,7 @@ import ServerConfig from './lib/ServerConfig'
 import indexRouter from './routes/index'
 import managementIndexRouter from './routes/management/index'
 import managementUserRouter from './routes/management/user'
+import apiUsersRouter from './routes/api/users'
 
 const app = express();
 
@@ -48,6 +49,7 @@ try {
   app.use('/', indexRouter);
   app.use('/management/', managementIndexRouter);
   app.use('/management/user/', managementUserRouter);
+  app.use('/api/users/', apiUsersRouter);
 
   // systemLogger をExpressに実装
   app.use(systemLogger())
