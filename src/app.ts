@@ -47,9 +47,9 @@ try {
 
   // Routings
   app.use('/', indexRouter);
-  app.use('/management/', managementIndexRouter);
-  app.use('/management/user/', managementUserRouter);
-  app.use('/api/users/', apiUsersRouter);
+  app.use('/management', managementIndexRouter);
+  app.use('/management/user', managementUserRouter);
+  app.use('/api/users', apiUsersRouter);
 
   // systemLogger をExpressに実装
   app.use(systemLogger())
