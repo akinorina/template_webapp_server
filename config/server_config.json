@@ -1,3 +1,15 @@
 {
-  "app_name": "template_webapp"
+  "app_name": "template_webapp",
+  "server": {
+    "session": {
+      "secret": "secret",
+      "resave": true,
+      "saveUninitialized": false,
+      "cookie": {
+        "httpOnly": true,
+        "secure": false,
+        "maxAge": 3600000
+      }
+    }
+  }
 }

@@ -22,7 +22,8 @@ export default class ServerConfig {
    */
   constructor() {
     // server_config.json 取得
-    this.data = JSON.parse(fs.readFileSync(APP_ROOT + "config/server_config.json", "utf-8"));
+    const configText = fs.readFileSync(APP_ROOT + "config/server_config.json", "utf-8");
+    this.data = JSON.parse(configText);
 
     // .env 取得
     const result = dotenv.config()
