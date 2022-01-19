@@ -9,6 +9,9 @@ import { createConnection, Connection } from 'typeorm';
 // session
 import session from 'express-session';
 
+// nunjucks
+import nunjucks from 'nunjucks'
+
 // Passport
 import passport from './passport';
 
@@ -47,9 +50,12 @@ try {
   // make an DB connection.
   createConnection('default').then((connection: Connection) => {
 
-  // view engine setup
-  app.set('views', path.join(APP_ROOT, serverConfig.data.server.view.template_file_path_root));
-  app.set('view engine', serverConfig.data.server.view.type);
+  // nunjucks - view engine setup
+  nunjucks.configure(path.join(APP_ROOT, serverConfig.data.server.view.template_file_path_root), {
+    autoescape: true,
+    express: app
+  });
+  app.set('view engine', 'twig');
 
   app.use(express.json());
   app.use(express.urlencoded({ extended: false }));
