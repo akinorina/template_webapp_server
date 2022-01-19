@@ -12,17 +12,23 @@ import path from 'path'
 import moment from 'moment'
 // twig
 import Twig from 'twig'
+// nunjucks
+import nunjucks from 'nunjucks'
 
 // DB access by TypeORM
 import { getConnection } from "typeorm"
 import { User } from '../../entity/User'
 
 // console logger
-import consoleLogger from '../../lib/log/consoleLogger'
+// import consoleLogger from '../../lib/log/consoleLogger'
 
 // libs
 import { isAuthenticated } from '../../lib/libAuth'
 import { getAllParameters } from '../../lib/libServer'
+import Mailer from '../../lib/Mailer'
+
+// dir: APP_ROOT
+const APP_ROOT = path.join(__dirname, '../../../')
 
 // router
 const router = express.Router()
@@ -139,24 +145,7 @@ router.post('/', isAuthenticated, async function (req, res, next) {
   // user.updatedAt = 'null'
   // user.deletedAt = 'null'
   const savedUser = await user.save()
-  consoleLogger.debug('savedUser: ', savedUser)
-
-  // ----- -----
-
-  // (4). メール送信: to admin
-  // SMTPサーバー接続情報
-  const transport_params: any = {
-    host: process.env.SMTP_HOST,
-    port: process.env.SMTP_PORT,
-    secure: false,                         // true for 465, false for other ports
-    auth: {
-      user: process.env.SMTP_AUTH_USER,
-      pass: process.env.SMTP_AUTH_PASSWORD
-    },
-  }
-  // connect to smtp server.
-  const transporter = await nodemailer.createTransport(transport_params);
-  consoleLogger.debug('transporter: ', transporter)
+  // consoleLogger.debug('savedUser: ', savedUser)
 
   // 登録情報
   const registData: any = {
@@ -167,39 +156,36 @@ router.post('/', isAuthenticated, async function (req, res, next) {
     userType: savedUser.userType
   }
 
-  // to admin
-  Twig.renderFile(path.join(__dirname, '../../../' + process.env.REGIST_MAIL_TO_ADMIN_TEXT), registData, async (err: Error, to_admin_mail_txt: string) => {
-    Twig.renderFile(path.join(__dirname, '../../../' + process.env.REGIST_MAIL_TO_ADMIN_HTML), registData, async (err: Error, to_admin_mail_html: string) => {
-      // send mail with defined transport object
-      const sendmail_param = {
-        from: process.env.REGIST_MAIL_TO_ADMIN_FROM,
-        to: process.env.REGIST_MAIL_TO_ADMIN_TO,
-        subject: process.env.REGIST_MAIL_TO_ADMIN_SUBJECT,
-        text: to_admin_mail_txt,
-        html: to_admin_mail_html,
-      }
-      let info = await transporter.sendMail(sendmail_param);
-      // consoleLogger.debug("Message sent: %s", info);
-    });
+  // (4). メール送信
+  const myMailer = new Mailer({
+    host: 'localhost',
+    port: 1025,
+    secure: false,  // true for 465, false for other ports
+    auth: {
+      user: 'xxx',
+      pass: 'xxx'
+    }
   });
 
-  // to customer
-  Twig.renderFile(path.join(__dirname, '../../../' + process.env.REGIST_MAIL_TO_CUSTOMER_TEXT), registData, async (err: Error, to_customer_mail_txt: string) => {
-    Twig.renderFile(path.join(__dirname, '../../../' + process.env.REGIST_MAIL_TO_CUSTOMER_HTML), registData, async (err: Error, to_customer_mail_html: string) => {
-      // send mail with defined transport object
-      const sendmail_param = {
-        from: process.env.REGIST_MAIL_TO_CUSTOMER_FROM,
-        to: registData.name + ' <' + registData.email + '>',
-        subject: process.env.REGIST_MAIL_TO_CUSTOMER_SUBJECT,
-        text: to_customer_mail_txt,
-        html: to_customer_mail_html,
-      }
-      let info = await transporter.sendMail(sendmail_param);
-      // consoleLogger.debug("Message sent: %s", info);
-    });
-  });
+  // メール送信: to admin
+  myMailer.sendMaiilWithTemplates({
+    from: process.env.REGIST_MAIL_TO_ADMIN_FROM,
+    to: process.env.REGIST_MAIL_TO_ADMIN_TO,
+    subject: process.env.REGIST_MAIL_TO_ADMIN_SUBJECT,
+    templateData: registData,
+    templateTextFilePath: process.env.REGIST_MAIL_TO_ADMIN_TEXT,
+    templateHtmlFilePath: process.env.REGIST_MAIL_TO_ADMIN_HTML,
+  })
 
-  // ----- -----
+  // メール送信: to customer
+  myMailer.sendMaiilWithTemplates({
+    from: process.env.REGIST_MAIL_TO_CUSTOMER_FROM,
+    to: registData.name + ' <' + registData.email + '>',
+    subject: process.env.REGIST_MAIL_TO_CUSTOMER_SUBJECT,
+    templateData: registData,
+    templateTextFilePath: process.env.REGIST_MAIL_TO_CUSTOMER_TEXT,
+    templateHtmlFilePath: process.env.REGIST_MAIL_TO_CUSTOMER_HTML
+  })
 
   // render page.
   const viewValues = { login_user: req.user, User: savedUser }
