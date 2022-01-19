@@ -10,6 +10,14 @@
         "secure": false,
         "maxAge": 3600000
       }
+    },
+    "static": {
+      "static_file_path_root": "./public"
+    },
+    "view": {
+      "type": "twig",
+      "template_file_path_root": "./templates/views"
     }
-  }
+  },
+  "database": {}
 }

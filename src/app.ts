@@ -34,6 +34,10 @@ import managementUserRouter from './routes/management/user'
 import apiAuthRouter from './routes/api/auth'
 import apiUsersRouter from './routes/api/users'
 
+// dir: APP_ROOT
+const APP_ROOT = path.join(__dirname, '../')
+// consoleLogger.debug('APP_ROOT', APP_ROOT);
+
 const app = express();
 
 try {
@@ -44,25 +48,16 @@ try {
   createConnection('default').then((connection: Connection) => {
 
   // view engine setup
-  app.set('views', path.join(__dirname, '../templates/views'));
-  app.set('view engine', 'twig');
+  app.set('views', path.join(APP_ROOT, serverConfig.data.server.view.template_file_path_root));
+  app.set('view engine', serverConfig.data.server.view.type);
 
   app.use(express.json());
   app.use(express.urlencoded({ extended: false }));
   app.use(cookieParser());
-  app.use(express.static(path.join(__dirname, '../public')));
+  app.use(express.static(path.join(APP_ROOT, serverConfig.data.server.static.static_file_path_root)));
 
   // Session
-  app.use(session({
-    secret: 'secret',
-    resave: true,
-    saveUninitialized: false,
-    cookie: {
-      httpOnly: true,
-      secure: false,
-      maxAge: 1000 * 60 * 60 * 1
-    }
-  }))
+  app.use(session(serverConfig.data.server.session));
 
   // Passport
   app.use(passport.initialize())
