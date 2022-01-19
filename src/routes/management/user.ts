@@ -27,6 +27,9 @@ import { isAuthenticated } from '../../lib/libAuth'
 import { getAllParameters } from '../../lib/libServer'
 import Mailer from '../../lib/Mailer'
 
+// サーバー設定
+import serverConfig from '../../config/server_config'
+
 // dir: APP_ROOT
 const APP_ROOT = path.join(__dirname, '../../../')
 
@@ -156,35 +159,27 @@ router.post('/', isAuthenticated, async function (req, res, next) {
     userType: savedUser.userType
   }
 
-  // (4). メール送信
-  const myMailer = new Mailer({
-    host: 'localhost',
-    port: 1025,
-    secure: false,  // true for 465, false for other ports
-    auth: {
-      user: 'xxx',
-      pass: 'xxx'
-    }
-  });
+  // (4). ユーザー登録告知メール送信
+  const myMailer = new Mailer(serverConfig.smtp);
 
   // メール送信: to admin
   myMailer.sendMaiilWithTemplates({
-    from: process.env.REGIST_MAIL_TO_ADMIN_FROM,
-    to: process.env.REGIST_MAIL_TO_ADMIN_TO,
-    subject: process.env.REGIST_MAIL_TO_ADMIN_SUBJECT,
+    from: serverConfig.regist_user.to_admin.from,
+    to:  serverConfig.regist_user.to_admin.to,
+    subject:  serverConfig.regist_user.to_admin.subject,
     templateData: registData,
-    templateTextFilePath: process.env.REGIST_MAIL_TO_ADMIN_TEXT,
-    templateHtmlFilePath: process.env.REGIST_MAIL_TO_ADMIN_HTML,
+    templateTextFilePath: serverConfig.regist_user.to_admin.template_text_file_path,
+    templateHtmlFilePath: serverConfig.regist_user.to_admin.template_html_html_path,
   })
 
-  // メール送信: to customer
+  // メール送信: to user
   myMailer.sendMaiilWithTemplates({
-    from: process.env.REGIST_MAIL_TO_CUSTOMER_FROM,
+    from: serverConfig.regist_user.to_user.from,
     to: registData.name + ' <' + registData.email + '>',
-    subject: process.env.REGIST_MAIL_TO_CUSTOMER_SUBJECT,
+    subject: serverConfig.regist_user.to_user.subject,
     templateData: registData,
-    templateTextFilePath: process.env.REGIST_MAIL_TO_CUSTOMER_TEXT,
-    templateHtmlFilePath: process.env.REGIST_MAIL_TO_CUSTOMER_HTML
+    templateTextFilePath: serverConfig.regist_user.to_user.template_text_file_path,
+    templateHtmlFilePath: serverConfig.regist_user.to_user.template_html_file_path,
   })
 
   // render page.

@@ -12,6 +12,9 @@ import session from 'express-session';
 // nunjucks
 import nunjucks from 'nunjucks'
 
+// サーバー設定
+import serverConfig from './config/server_config'
+
 // Passport
 import passport from './passport';
 
@@ -44,14 +47,11 @@ const APP_ROOT = path.join(__dirname, '../')
 const app = express();
 
 try {
-  // サーバー設定
-  const serverConfig = new ServerConfig();
-
   // make an DB connection.
   createConnection('default').then((connection: Connection) => {
 
   // nunjucks - view engine setup
-  nunjucks.configure(path.join(APP_ROOT, serverConfig.data.server.view.template_file_path_root), {
+  nunjucks.configure(path.join(APP_ROOT, serverConfig.server.view.template_file_path_root), {
     autoescape: true,
     express: app
   });
@@ -60,10 +60,10 @@ try {
   app.use(express.json());
   app.use(express.urlencoded({ extended: false }));
   app.use(cookieParser());
-  app.use(express.static(path.join(APP_ROOT, serverConfig.data.server.static.static_file_path_root)));
+  app.use(express.static(path.join(APP_ROOT, serverConfig.server.static.static_file_path_root)));
 
   // Session
-  app.use(session(serverConfig.data.server.session));
+  app.use(session(serverConfig.server.session));
 
   // Passport
   app.use(passport.initialize())

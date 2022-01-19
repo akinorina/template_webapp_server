@@ -14,9 +14,13 @@ import passport from '../../passport'
 
 // libs
 import { getAllParameters } from '../../lib/libServer'
+import Mailer from '../../lib/Mailer'
 
 // twig
 import Twig from 'twig'
+
+// サーバー設定
+import serverConfig from '../../config/server_config'
 
 // console logger
 // import consoleLogger from '../../lib/log/consoleLogger'
@@ -75,21 +79,6 @@ router.post('/regist', async function (req, res, next) {
   const savedUser = await getConnection().getRepository(User).save(user);
   // consoleLogger.debug('savedUser: ', savedUser);
 
-  // (4). メール送信: to admin
-  // SMTPサーバー接続情報
-  const transport_params: any = {
-    host: process.env.SMTP_HOST,
-    port: process.env.SMTP_PORT,
-    secure: false,                         // true for 465, false for other ports
-    auth: {
-      user: process.env.SMTP_AUTH_USER,
-      pass: process.env.SMTP_AUTH_PASSWORD
-    },
-  }
-  // connect to smtp server.
-  const transporter = await nodemailer.createTransport(transport_params);
-  // consoleLogger.debug('transporter: ', transporter)
-
   // 登録情報
   const registData: any = {
     createdAt: moment(savedUser.createdAt).format("YYYY/M/D H:mm:ss"),
@@ -99,37 +88,28 @@ router.post('/regist', async function (req, res, next) {
     userType: savedUser.userType
   }
 
-  // to admin
-  Twig.renderFile(path.join(__dirname, '../../../' + process.env.REGIST_MAIL_TO_ADMIN_TEXT), registData, async (err: Error, to_admin_mail_txt: string) => {
-    Twig.renderFile(path.join(__dirname, '../../../' + process.env.REGIST_MAIL_TO_ADMIN_HTML), registData, async (err: Error, to_admin_mail_html: string) => {
-      // send mail with defined transport object
-      const sendmail_param = {
-        from: process.env.REGIST_MAIL_TO_ADMIN_FROM,
-        to: process.env.REGIST_MAIL_TO_ADMIN_TO,
-        subject: process.env.REGIST_MAIL_TO_ADMIN_SUBJECT,
-        text: to_admin_mail_txt,
-        html: to_admin_mail_html,
-      }
-      let info = await transporter.sendMail(sendmail_param);
-      // consoleLogger.debug("Message sent: %s", info);
-    });
-  });
+  // (4). ユーザー登録告知メール送信
+  const myMailer = new Mailer(serverConfig.smtp);
 
-  // to customer
-  Twig.renderFile(path.join(__dirname, '../../../' + process.env.REGIST_MAIL_TO_CUSTOMER_TEXT), registData, async (err: Error, to_customer_mail_txt: string) => {
-    Twig.renderFile(path.join(__dirname, '../../../' + process.env.REGIST_MAIL_TO_CUSTOMER_HTML), registData, async (err: Error, to_customer_mail_html: string) => {
-      // send mail with defined transport object
-      const sendmail_param = {
-        from: process.env.REGIST_MAIL_TO_CUSTOMER_FROM,
-        to: registData.name + ' <' + registData.email + '>',
-        subject: process.env.REGIST_MAIL_TO_CUSTOMER_SUBJECT,
-        text: to_customer_mail_txt,
-        html: to_customer_mail_html,
-      }
-      let info = await transporter.sendMail(sendmail_param);
-      // consoleLogger.debug("Message sent: %s", info);
-    });
-  });
+  // メール送信: to admin
+  myMailer.sendMaiilWithTemplates({
+    from: serverConfig.regist_user.to_admin.from,
+    to:  serverConfig.regist_user.to_admin.to,
+    subject:  serverConfig.regist_user.to_admin.subject,
+    templateData: registData,
+    templateTextFilePath: serverConfig.regist_user.to_admin.template_text_file_path,
+    templateHtmlFilePath: serverConfig.regist_user.to_admin.template_html_html_path,
+  })
+
+  // メール送信: to user
+  myMailer.sendMaiilWithTemplates({
+    from: serverConfig.regist_user.to_user.from,
+    to: registData.name + ' <' + registData.email + '>',
+    subject: serverConfig.regist_user.to_user.subject,
+    templateData: registData,
+    templateTextFilePath: serverConfig.regist_user.to_user.template_text_file_path,
+    templateHtmlFilePath: serverConfig.regist_user.to_user.template_html_file_path,
+  })
 
   // (5). レスポンスデータ作成、レスポンス
   const resData = { status: 'success', data: user };
