@@ -93,22 +93,22 @@ router.post('/regist', async function (req, res, next) {
 
   // メール送信: to admin
   myMailer.sendMaiilWithTemplates({
-    from: serverConfig.regist_user.to_admin.from,
-    to:  serverConfig.regist_user.to_admin.to,
-    subject:  serverConfig.regist_user.to_admin.subject,
+    from: serverConfig.app.send_mails.regist_user.to_admin.from,
+    to:  serverConfig.app.send_mails.regist_user.to_admin.to,
+    subject:  serverConfig.app.send_mails.regist_user.to_admin.subject,
     templateData: registData,
-    templateTextFilePath: serverConfig.regist_user.to_admin.template_text_file_path,
-    templateHtmlFilePath: serverConfig.regist_user.to_admin.template_html_html_path,
+    templateTextFilePath: serverConfig.app.send_mails.regist_user.to_admin.template_text_file_path,
+    templateHtmlFilePath: serverConfig.app.send_mails.regist_user.to_admin.template_html_html_path,
   })
 
   // メール送信: to user
   myMailer.sendMaiilWithTemplates({
-    from: serverConfig.regist_user.to_user.from,
+    from: serverConfig.app.send_mails.regist_user.to_user.from,
     to: registData.name + ' <' + registData.email + '>',
-    subject: serverConfig.regist_user.to_user.subject,
+    subject: serverConfig.app.send_mails.regist_user.to_user.subject,
     templateData: registData,
-    templateTextFilePath: serverConfig.regist_user.to_user.template_text_file_path,
-    templateHtmlFilePath: serverConfig.regist_user.to_user.template_html_file_path,
+    templateTextFilePath: serverConfig.app.send_mails.regist_user.to_user.template_text_file_path,
+    templateHtmlFilePath: serverConfig.app.send_mails.regist_user.to_user.template_html_file_path,
   })
 
   // (5). レスポンスデータ作成、レスポンス
