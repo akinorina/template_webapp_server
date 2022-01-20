@@ -61,8 +61,21 @@ const serverConfig = {
 }
 
 // ----
-// [xx].
+// [xx]. 環境変数による設定上書き処理
 // ----
 
+// SMTP server設定
+if (process.env.SMTP_HOST) {
+  serverConfig.smtp.host = process.env.SMTP_HOST;
+}
+if (process.env.SMTP_PORT) {
+  serverConfig.smtp.port = Number(process.env.SMTP_PORT);
+}
+if (process.env.SMTP_AUTH_USER) {
+  serverConfig.smtp.auth.user = process.env.SMTP_AUTH_USER;
+}
+if (process.env.SMTP_AUTH_PASSWORD) {
+  serverConfig.smtp.auth.pass = process.env.SMTP_AUTH_PASSWORD;
+}
 
 export default serverConfig;
