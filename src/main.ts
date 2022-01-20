@@ -9,6 +9,9 @@ import express from 'express'
 import path from 'path'
 import cookieParser from 'cookie-parser'
 
+// CORS
+import cors from 'cors';
+
 // DB access by TypeORM
 import { createConnection, Connection } from 'typeorm';
 
@@ -66,6 +69,12 @@ try {
 
   // Session
   app.use(session(serverConfig.server.session));
+
+  // CORS: Cross-Origin Resource Sharing 設定
+  app.use(cors({
+    origin: serverConfig.server.cors.allowed_origins,
+    credentials: true
+  }));
 
   // Passport
   app.use(passport.initialize())

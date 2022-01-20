@@ -33,6 +33,13 @@ const serverConfig: any = {
     view: {
       type: "twig",
       template_file_path_root: "./templates/views"
+    },
+
+    // CORS対応実装
+    cors: {
+      allowed_origins: [
+        'http://localhost'
+      ]
     }
   },
 
