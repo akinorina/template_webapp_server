@@ -37,9 +37,7 @@ const serverConfig: any = {
 
     // CORS対応実装
     cors: {
-      allowed_origins: [
-        'http://localhost'
-      ]
+      allowed_origins: [ 'http://localhost:4000' ]
     }
   },
 
@@ -100,6 +98,10 @@ if (process.env.PORT) {
 // cookie domain (default: undefined)
 if (process.env.COOKIE_DOMAIN) {
   serverConfig.server.session.cookie.domain = process.env.COOKIE_DOMAIN;
+}
+// CORS allowed origin
+if (process.env.CORS_ALLOWED_ORIGINS) {
+  serverConfig.server.cors.allowed_origins = process.env.CORS_ALLOWED_ORIGINS.split(' ');
 }
 
 // SMTP server設定
