@@ -1,0 +1,40 @@
+{% extends '../../layouts/layout.twig' %}
+
+{% block body %}
+  <h1>管理画面</h1>
+  <p>/management/user</p>
+
+  <div>
+    <a href="/management/user/new">新規作成</a>
+  </div>
+
+  <table class="list">
+  <tbody>
+    <tr>
+    <th>id</th>
+    <th>name</th>
+    <th>kana</th>
+    <th>email</th>
+    <th>user_type</th>
+    <th></th>
+    <th></th>
+    </tr>
+  {% for User in Users %}
+    <tr>
+    <td>{{ User.id }}</td>
+    <td>{{ User.name }}</td>
+    <td>{{ User.nameKana }}</td>
+    <td>{{ User.email }}</td>
+    <td>{{ User.userType }}</td>
+    <td><a href="/management/user/{{ User.id }}">詳細</a></td>
+    <td><a href="/management/user/{{ User.id }}/delete">削除</a></td>
+    </tr>
+  {% endfor %}
+  </tbody>
+  </table>
+
+  <div>
+    <a href="/management">管理画面TOPへもどる</a>
+  </div>
+
+{% endblock %}

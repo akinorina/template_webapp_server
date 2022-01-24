@@ -1,0 +1,33 @@
+{% extends '../../layouts/layout.twig' %}
+
+{% block body %}
+  <h1>管理画面</h1>
+  <p>/management/user/:id/edit</p>
+
+  <form action="/management/user/{{ User.id }}" method="POST">
+  <table class="list">
+  <tr><th>id</th><td>{{ User.id }}</td></tr>
+  <tr><th>氏名</th><td><input type="text" name="name" value="{{ User.name }}"></td></tr>
+  <tr><th>かな</th><td><input type="text" name="nameKana" value="{{ User.nameKana }}"></td></tr>
+  <tr><th>emailアドレス</th><td><input type="email" name="email" value="{{ User.email }}"></td></tr>
+  <tr><th>パスワード</th><td><input type="password" name="password" value="{{ User.password }}"></td></tr>
+  <tr><th>ユーザータイプ</th><td>
+    <select name="userType">
+    <option value="">-</option>
+    <option value="admin" {% if User.userType == 'admin' %}selected{% endif %}>admin</option>
+    <option value="user" {% if User.userType == 'user' %}selected{% endif %}>user</option>
+    </select>
+  </td></tr>
+
+  </table>
+  <div>
+  <input type="submit" value="更新">
+  </div>
+
+  <div>
+    <a href="/management/user/{{ User.id }}">詳細へ戻る</a>
+  </div>
+
+  </form>
+
+{% endblock %}

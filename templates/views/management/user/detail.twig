@@ -1,0 +1,19 @@
+{% extends '../../layouts/layout.twig' %}
+
+{% block body %}
+  <h1>管理画面</h1>
+  <p>/management/user/:id</p>
+
+  <table class="list">
+  <tr><th>id</th><td>{{ User.id }}</td></tr>
+  <tr><th>氏名</th><td>{{ User.name }}</td></tr>
+  <tr><th>かな</th><td>{{ User.nameKana }}</td></tr>
+  <tr><th>emailアドレス</th><td>{{ User.email }}</td></tr>
+  <tr><th>ユーザータイプ</th><td>{{ User.userType }}</td></tr>
+  </table>
+
+  <div>
+  <a href="/management/user">戻る</a> | <a href="/management/user/{{ User.id }}/edit">編集</a>
+  </div>
+
+{% endblock %}
