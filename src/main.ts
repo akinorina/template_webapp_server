@@ -8,6 +8,7 @@ import createError from 'http-errors'
 import express from 'express'
 import path from 'path'
 import cookieParser from 'cookie-parser'
+import bodyParser from 'body-parser'
 
 // CORS
 import cors from 'cors';
@@ -65,6 +66,7 @@ try {
   app.use(express.json());
   app.use(express.urlencoded({ extended: false }));
   app.use(cookieParser());
+  app.use(bodyParser.urlencoded({extended: true}));
   app.use(express.static(path.join(APP_ROOT, serverConfig.server.static.static_file_path_root)));
 
   // Session
