@@ -31,7 +31,7 @@ const serverConfig: any = {
 
     // view
     view: {
-      type: "twig",
+      type: "njk",
       template_file_path_root: "./templates/views"
     },
 
@@ -69,15 +69,15 @@ const serverConfig: any = {
           from: 'Example Systems <hello@example.com>',
           to: 'Akinori Nakata <akinori.na@gmail.com>',
           subject: '新規登録情報',
-          template_text_file_path: 'registration_complete/admin_text.twig',
-          template_html_html_path: 'registration_complete/admin_html.twig'
+          template_text_file_path: 'registration_complete/admin_text.njk',
+          template_html_html_path: 'registration_complete/admin_html.njk'
         },
         // ユーザーへの送信
         to_user: {
           from: 'Example Systems <hello@example.com>',
           subject: 'ご登録ありがとうございます。',
-          template_text_file_path: 'registration_complete/user_text.twig',
-          template_html_file_path: 'registration_complete/user_html.twig'
+          template_text_file_path: 'registration_complete/user_text.njk',
+          template_html_file_path: 'registration_complete/user_html.njk'
         }
       }
     }

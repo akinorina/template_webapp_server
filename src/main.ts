@@ -60,7 +60,7 @@ try {
     autoescape: true,
     express: app
   });
-  app.set('view engine', 'twig');
+  app.set('view engine', serverConfig.server.view.type);
 
   app.use(express.json());
   app.use(express.urlencoded({ extended: false }));

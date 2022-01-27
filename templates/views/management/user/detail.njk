@@ -1,8 +1,8 @@
-{% extends '../../layouts/layout.twig' %}
+{% extends '../../layouts/layout.njk' %}
 
 {% block body %}
   <h1>管理画面</h1>
-  <p>/management/user/:id/delete</p>
+  <p>/management/user/:id</p>
 
   <table class="list">
   <tr><th>id</th><td>{{ User.id }}</td></tr>
@@ -13,11 +13,7 @@
   </table>
 
   <div>
-  <a href="/management/user">戻る</a>
-   | 
-  <form action="/management/user/{{ User.id }}/delete" method="post">
-  <input type="submit" value="削除" />
-  </form>
+  <a href="/management/user">戻る</a> | <a href="/management/user/{{ User.id }}/edit">編集</a>
   </div>
 
 {% endblock %}
