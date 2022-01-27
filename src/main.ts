@@ -10,6 +10,9 @@ import path from 'path'
 import cookieParser from 'cookie-parser'
 import bodyParser from 'body-parser'
 
+// file upload
+import fileUpload from 'express-fileupload'
+
 // CORS
 import cors from 'cors';
 
@@ -43,6 +46,7 @@ import samplesRouter from './routes/samples'
 import authRouter from './routes/auth'
 import managementIndexRouter from './routes/management/index'
 import managementUserRouter from './routes/management/user'
+import managementImageRouter from './routes/management/image'
 // Routings for API
 import apiAuthRouter from './routes/api/auth'
 import apiUsersRouter from './routes/api/users'
@@ -69,6 +73,9 @@ try {
   app.use(bodyParser.urlencoded({extended: true}));
   app.use(express.static(path.join(APP_ROOT, serverConfig.server.static.static_file_path_root)));
 
+  // express-fileupload モジュールを使用
+  app.use(fileUpload());
+
   // Session
   app.use(session(serverConfig.server.session));
 
@@ -91,6 +98,7 @@ try {
   app.use('/auth', authRouter);
   app.use('/management', managementIndexRouter);
   app.use('/management/user', managementUserRouter);
+  app.use('/management/image', managementImageRouter);
   // Routings for API
   app.use('/api/auth', apiAuthRouter);
   app.use('/api/users', apiUsersRouter);

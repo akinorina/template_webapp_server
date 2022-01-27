@@ -1,0 +1,132 @@
+{% extends '../../layouts/layout.njk' %}
+
+{% block body %}
+  <style>
+    //
+    .image {
+      background: red;
+    }
+    .image__image {
+      width: 350px;
+      height: 350px;
+      border: 10px #f0f0f0 solid;
+      display: flex;
+      justify-content: center;
+    }
+    .image__image__image {
+      width: auto;
+      height: auto;
+    }
+
+    .image__upload {
+    }
+    .image__upload__input {
+    }
+
+    .image__name {
+    }
+    .image__name__input {
+    }
+
+    .drag-area{
+      padding: 30px 0;
+      width: 100%;
+      margin: 0 auto 20px;
+      background: #f6f6f6;
+      text-align: center;
+    }
+    .drag-area.drag{
+      background: #f08080;
+    }
+
+    .drag-area input {
+       margin:0 auto;
+    }
+
+  </style>
+
+  <h1>管理画面</h1>
+  <p>/management/image/delete</p>
+
+  <div class="image">
+      <div class="image__id">
+        ID: {{ Image.id }}
+      </div>
+      <div class="image__name">
+        画像名: {{ Image.name }}
+      </div>
+      <div class="image__image">
+        <img class="image__image__image" id="image__image__image" src="{{ Image.fileUrl }}" />
+      </div>
+
+    <form action="/management/image/{{ Image.id }}/delete" method="post">
+      <input type="hidden" name="id" value="{{ Image.id }}" />
+      <button onclick="location.href='/management/image/{{ Image.id }}'; return false;">&lt;&lt; 戻る</button>
+      <input type="submit" name="submit" value="削除実行" />
+    </form>
+  </div>
+
+  <hr>
+  <ul>
+    <li><a href="/management/image">一覧へ戻る</a></li>
+  </li>
+
+
+  <script>
+    //
+    // document.addEventListener('DOMContentLoaded',()=>{
+    //   // let input = document.querySelectorAll('input[name="images"]');  // 好きなようにDOMを取得してください
+    //   let imgEle = document.getElementById('image__image__image');
+    //   let org_image_src = imgEle.src;
+    //   // console.log('org_image_src" ', org_image_src);
+
+    //   // 対象エリア element
+    //   let uploadArea = document.getElementById('uploadArea');
+    //   // Input File element
+    //   let inputFiles = document.getElementById('images');
+    //   // 画像表示 element
+    //   let detailImage = document.getElementById('image__image__image');
+
+    //   //dragoverイベントでクラスを付与
+    //   uploadArea.addEventListener("dragover", (event) => {
+    //     event.preventDefault();
+    //     // 背景色設定
+    //     event.target.classList.add('drag');
+    //   });
+    //   //dragleaveイベントでクラスを削除
+    //   uploadArea.addEventListener("dragleave", (event) => {
+    //     // 背景色リセット
+    //     event.target.classList.remove('drag');
+    //   });
+
+    //   // dropイベント
+    //   uploadArea.addEventListener("drop", (event) => {
+    //     event.preventDefault();
+    //     // 背景色リセット
+    //     event.target.classList.remove('drag');
+
+    //     // drag したファイルを設定
+    //     inputFiles.files = event.dataTransfer.files;
+
+    //     // 画像読込、表示
+    //     let reader = new FileReader();
+    //     reader.addEventListener('load', () => {
+    //       detailImage.src = reader.result;
+    //     });
+    //     reader.readAsDataURL(inputFiles.files[0]);
+    //   });
+
+    //   // ボタン押下によるファイル選択
+    //   inputFiles.addEventListener('change', (event) => {
+    //     // 画像読込、表示
+    //     let reader = new FileReader();
+    //     reader.addEventListener('load', () => {
+    //       detailImage.src = reader.result;
+    //     });
+    //     reader.readAsDataURL(inputFiles.files[0]);
+    //   });
+    // });
+
+  </script>
+
+{% endblock %}

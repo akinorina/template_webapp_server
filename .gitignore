@@ -107,4 +107,4 @@ dist
 .DS_Store
 
 # application: uploaded files.
-public/images_uploaded
+public/image_manager

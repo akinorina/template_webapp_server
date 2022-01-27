@@ -60,6 +60,13 @@ const serverConfig: any = {
     // application 名称
     name: "template_webapp",
 
+    // 画像管理
+    image_management: {
+      maxSize: 2 * 1024 * 1024, // 2MB
+      mimeType: ['image/png', 'image/jpeg'],
+      savedImageDir: 'image_manager',
+    },
+
     // メール送信設定
     send_mails: {
       // ユーザー登録時
