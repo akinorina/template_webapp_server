@@ -1,6 +1,6 @@
 import {MigrationInterface, QueryRunner} from "typeorm";
 
-export class User1642588314778 implements MigrationInterface {
+export class User1643195088728 implements MigrationInterface {
 
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.query(
@@ -22,5 +22,6 @@ export class User1642588314778 implements MigrationInterface {
             `DELETE FROM \`user\` WHERE id = 1`
         );
     }
+
 
 }
