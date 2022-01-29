@@ -38,7 +38,7 @@ router.get('/', isAuthenticated, async function (req: express.Request, res: expr
   // consoleLogger.debug('parameters', parameters)
 
   // パラメータ設定
-  const options = { where: { user_id: req.user.id } };
+  const options = { where: { userId: req.user.id } };
 
   // DB access
   const images = await Image.find(options)
@@ -75,9 +75,6 @@ router.post('/', isAuthenticated, async function (req: express.Request, res: exp
     return;
   }
   // consoleLogger.debug('parameters', parameters);
-
-  // make an DB connection.
-  const connection = getConnection()
 
   // ---
   // ファイル保存、DB登録
@@ -130,7 +127,9 @@ router.post('/', isAuthenticated, async function (req: express.Request, res: exp
       // 生成データ作成
       const image = {
         name: parameters.name,
-        user_id: req.user ? req.user.id : 0,
+        userId: req.user ? req.user.id : 0,
+        fileName: path.basename(ele.name),
+        fileMimetype: ele.mimetype,
         filePath: filePath,
         fileUrl: urlPath
       };
@@ -204,6 +203,8 @@ router.post('/:id', isAuthenticated, async function (req, res, next) {
   
   // 画像ID
   let image_id = images[0].id;
+  // 画像 mime type
+  let fileMimetype = images[0].fileMimetype;
   // サーバー上の保存位置
   let filePath = images[0].filePath;
   // URLパス
@@ -257,6 +258,8 @@ router.post('/:id', isAuthenticated, async function (req, res, next) {
       filePath = `public/${savedDir}${saveFilename}`;
       // URLパス
       urlPath = `/${savedDir}${saveFilename}`;
+      // mime type
+      fileMimetype = imageList[0].mimetype;
 
       // メモリ上にあるファイルをサーバーパスへ移動させる
       imageList[0].mv(path.join(APP_ROOT, filePath), (err: any) => {
@@ -272,8 +275,9 @@ router.post('/:id', isAuthenticated, async function (req, res, next) {
 
   // 生成データ作成
   const imageData = {
-    user_id: req.user ? req.user.id : 0,
-    name: parameters.name,
+    userId: req.user ? req.user.id : 0,
+    fileName: parameters.name,
+    fileMimetype: fileMimetype,
     filePath: filePath,
     fileUrl: urlPath
   };

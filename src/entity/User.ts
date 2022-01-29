@@ -27,13 +27,13 @@ export class User extends BaseEntity {
   @Column({ type: "varchar", default: 'user', comment: 'ユーザー種別 (admin|user)' })
   userType: UserType = undefined;
 
-  @CreateDateColumn({ comment: '作成日時' })
-  createdAt: string | undefined = undefined;
+  @CreateDateColumn({ comment: '作成日時', type: 'datetime', precision: 6, nullable: true })
+  createdAt: string | undefined | null = null;
 
-  @UpdateDateColumn({ comment: '更新日時' })
-  updatedAt: string | undefined = undefined;
+  @UpdateDateColumn({ comment: '更新日時', type: 'datetime', precision: 6, nullable: true })
+  updatedAt: string | undefined | null = null;
 
-  @DeleteDateColumn({ comment: '削除日時' })
-  deletedAt: string | undefined = undefined;
+  @DeleteDateColumn({ comment: '削除日時', type: 'datetime', precision: 6, nullable: true, default: null })
+  deletedAt: string | undefined | null = null;
 }
  

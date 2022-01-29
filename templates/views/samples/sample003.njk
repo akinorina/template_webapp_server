@@ -9,6 +9,7 @@
       <input type="file" id="file" accept="image/*" />
       <input type="hidden" id="file_name" name="file_name" value="">
       <input type="hidden" id="file_content" name="file_content" value="">
+      <input type="hidden" id="file_mimetype" name="file_mimetype" value="">
       <input type="submit" name="submit" value="send">
     </form>
     <div id="preview">
@@ -33,9 +34,10 @@
       // file_name
       let FileName = document.getElementById('file_name');
       FileName.value = targetFiles[0].name;
-
       // file_content
       let FileContent = document.getElementById('file_content');
+      // file_mimetype
+      let FileMimetype = document.getElementById('file_mimetype');
 
       // preview (reset)
       let preview = document.getElementById('preview');
@@ -45,7 +47,10 @@
       let reader = new FileReader();
       reader.addEventListener('load', () => {
         // file_content
-        FileContent.value = reader.result;
+        let imageInfos = reader.result.match(/^data:(.*);base64,(.*)$/);
+        FileContent.value = imageInfos[2];
+        FileMimetype.value = imageInfos[1];
+        // console.log('imageInfos: ', imageInfos);
 
         // preview images.
         let img = new Image();

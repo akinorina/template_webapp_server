@@ -6,52 +6,31 @@ import { Entity, BaseEntity, PrimaryGeneratedColumn, Column, CreateDateColumn, U
 @Entity()
 export class Image extends BaseEntity {
 
-  /**
-   * 画像ID
-   */
   @PrimaryGeneratedColumn({ comment: '画像ID' })
   id: number = 0;
 
-  /**
-   * 所有者ユーザーID
-   */
   @Column({ default: 0, comment: '所有者ユーザーID' })
-  user_id: number = 0;
+  userId: number = 0;
 
-  /**
-   * ファイル名
-   */
   @Column({ default: '', comment: 'ファイル名' })
-  name: string = "";
+  fileName: string = "";
 
-  /**
-   * 物理ファイル相対パス
-   */
+  @Column({ default: '', comment: 'ファイルmime-type' })
+  fileMimetype: string = "";
+
   @Column({ default: '', comment: '物理ファイル相対パス' })
   filePath: string = "";
 
-  /**
-   * 画像URLパス
-   */
   @Column({ default: '', comment: '画像URLパス' })
   fileUrl: string = "";
 
-  /**
-   * 作成日時
-   */
-  @CreateDateColumn({ comment: '作成日時' })
-  createdAt: string | undefined = undefined;
+  @CreateDateColumn({ comment: '作成日時', type: 'datetime', precision: 6, nullable: true })
+  createdAt: string | undefined | null = null;
 
-  /**
-   * 更新日時
-   */
-  @UpdateDateColumn({ comment: '更新日時' })
-  updatedAt: string | undefined = undefined;
+  @UpdateDateColumn({ comment: '更新日時', type: 'datetime', precision: 6, nullable: true })
+  updatedAt: string | undefined | null = null;
 
-  /**
-   * 削除日時
-   */
-  @DeleteDateColumn({ comment: '削除日時' })
-  deletedAt: string | undefined = undefined;
+  @DeleteDateColumn({ comment: '削除日時', type: 'datetime', precision: 6, nullable: true, default: null })
+  deletedAt: string | undefined | null = null;
 }
  

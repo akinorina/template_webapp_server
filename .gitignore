@@ -108,3 +108,4 @@ dist
 
 # application: uploaded files.
 public/image_manager
+public/sample_images

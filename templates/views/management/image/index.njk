@@ -8,16 +8,17 @@
       justify-content: flex-start;
     }
     .imagelist__item {
-      border: 3px #f0f0f0 solid;
-      width: 120px;
-      height: 120px;
+      margin: 2px;
+      border: 8px #f0f0f0 solid;
+      width: 180px;
+      height: 180px;
       text-align: center;
     }
     .imagelist__item__name {
     }
     .imagelist__item__image {
-      max-width: 120px;
-      max-height: 120px;
+      max-width: 150px;
+      max-height: 150px;
     }
 
   </style>
@@ -33,12 +34,10 @@
     {% for image in Images %}
       <div class="imagelist__item">
         <div class="imagelist__item__name">
-          {{ image.id }}: {{ image.name }}
+          {{ image.id }}: {{ image.fileName }}
         </div>
         <a href="/management/image/{{ image.id }}">
-          <div class="imagelist__item__image">
-            <img src="{{ image.fileUrl }}" style="height: 100px" /><br>
-          </div>
+          <img src="{{ image.fileUrl }}" class="imagelist__item__image" />
         </a>
       </div>
     {% endfor %}
