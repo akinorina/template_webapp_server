@@ -50,6 +50,7 @@ import managementImageRouter from './routes/management/image'
 // Routings for API
 import apiAuthRouter from './routes/api/auth'
 import apiUsersRouter from './routes/api/users'
+import apiImagesRouter from './routes/api/images'
 
 // dir: APP_ROOT
 const APP_ROOT = path.join(__dirname, '../')
@@ -102,6 +103,7 @@ try {
   // Routings for API
   app.use('/api/auth', apiAuthRouter);
   app.use('/api/users', apiUsersRouter);
+  app.use('/api/images', apiImagesRouter);
 
   // systemLogger をExpressに実装
   app.use(systemLogger())
