@@ -1,31 +1,28 @@
 /**
- * User
+ * Image - 画像
  */
 import { Entity, BaseEntity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, DeleteDateColumn } from "typeorm"
 
-// ユーザー権限
-type UserType = 'admin' | 'user' | undefined
-
 @Entity()
-export class User extends BaseEntity {
+export class Image extends BaseEntity {
 
-  @PrimaryGeneratedColumn({ comment: 'ユーザーID' })
+  @PrimaryGeneratedColumn({ comment: '画像ID' })
   id: number = 0;
 
-  @Column({ default: '', comment: '氏名' })
-  name: string = "";
+  @Column({ default: 0, comment: '所有者ユーザーID' })
+  userId: number = 0;
 
-  @Column({ default: '', comment: '氏名かな' })
-  nameKana: string = "";
+  @Column({ default: '', comment: 'ファイル名' })
+  fileName: string = "";
 
-  @Column({ default: '', comment: 'Emailアドレス' })
-  email: string = "";
+  @Column({ default: '', comment: 'ファイルmime-type' })
+  fileMimetype: string = "";
 
-  @Column({ default: '', comment: 'パスワード' })
-  password: string = "";
+  @Column({ default: '', comment: '物理ファイル相対パス' })
+  filePath: string = "";
 
-  @Column({ type: "varchar", default: 'user', comment: 'ユーザー種別 (admin|user)' })
-  userType: UserType = undefined;
+  @Column({ default: '', comment: '画像URLパス' })
+  fileUrl: string = "";
 
   @CreateDateColumn({ comment: '作成日時', type: 'datetime', precision: 6, nullable: true })
   createdAt: string | undefined | null = null;

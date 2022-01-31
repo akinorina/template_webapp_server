@@ -2,6 +2,15 @@
  * サーバー設定データ
  */
 
+// dotenv
+import dotenv from 'dotenv'
+
+// application logger
+import applicationLogger from '../lib/log/applicationLogger'
+
+// .env取得
+dotenv.config();
+
 // ----
 // [1]. 設定 (default)
 // ----
@@ -31,13 +40,13 @@ const serverConfig: any = {
 
     // view
     view: {
-      type: "twig",
+      type: "njk",
       template_file_path_root: "./templates/views"
     },
 
     // CORS対応実装
     cors: {
-      allowed_origins: [ 'http://localhost:4000' ]
+      allowed_origins: 'http://www.example.com'
     }
   },
 
@@ -60,6 +69,13 @@ const serverConfig: any = {
     // application 名称
     name: "template_webapp",
 
+    // 画像管理
+    image_management: {
+      maxSize: 2 * 1024 * 1024, // 2MB
+      mimeType: ['image/png', 'image/jpeg'],
+      savedImageDir: 'image_manager',
+    },
+
     // メール送信設定
     send_mails: {
       // ユーザー登録時
@@ -69,15 +85,15 @@ const serverConfig: any = {
           from: 'Example Systems <hello@example.com>',
           to: 'Akinori Nakata <akinori.na@gmail.com>',
           subject: '新規登録情報',
-          template_text_file_path: 'registration_complete/admin_text.twig',
-          template_html_html_path: 'registration_complete/admin_html.twig'
+          template_text_file_path: 'registration_complete/admin_text.njk',
+          template_html_html_path: 'registration_complete/admin_html.njk'
         },
         // ユーザーへの送信
         to_user: {
           from: 'Example Systems <hello@example.com>',
           subject: 'ご登録ありがとうございます。',
-          template_text_file_path: 'registration_complete/user_text.twig',
-          template_html_file_path: 'registration_complete/user_html.twig'
+          template_text_file_path: 'registration_complete/user_text.njk',
+          template_html_file_path: 'registration_complete/user_html.njk'
         }
       }
     }
@@ -103,7 +119,6 @@ if (process.env.COOKIE_DOMAIN) {
 if (process.env.CORS_ALLOWED_ORIGINS) {
   serverConfig.server.cors.allowed_origins = process.env.CORS_ALLOWED_ORIGINS.split(' ');
 }
-
 // SMTP server設定
 if (process.env.SMTP_HOST) {
   serverConfig.smtp.host = process.env.SMTP_HOST;

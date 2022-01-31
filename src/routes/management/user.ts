@@ -10,10 +10,6 @@ import nodemailer from 'nodemailer'
 import path from 'path'
 // moment
 import moment from 'moment'
-// twig
-import Twig from 'twig'
-// nunjucks
-import nunjucks from 'nunjucks'
 
 // DB access by TypeORM
 import { getConnection } from "typeorm"

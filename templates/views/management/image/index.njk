@@ -1,0 +1,51 @@
+{% extends '../../layouts/layout.njk' %}
+
+{% block body %}
+  <style>
+    .imagelist {
+      display: flex;
+      flex-flow: row wrap;
+      justify-content: flex-start;
+    }
+    .imagelist__item {
+      margin: 2px;
+      border: 8px #f0f0f0 solid;
+      width: 180px;
+      height: 180px;
+      text-align: center;
+    }
+    .imagelist__item__name {
+    }
+    .imagelist__item__image {
+      max-width: 150px;
+      max-height: 150px;
+    }
+
+  </style>
+
+  <h1>管理画面</h1>
+  <p>/management/image</p>
+
+  <div>
+    <a href="/management/image/new">新規作成</a>
+  </div>
+
+  <div class="imagelist">
+    {% for image in Images %}
+      <div class="imagelist__item">
+        <div class="imagelist__item__name">
+          {{ image.id }}: {{ image.fileName }}
+        </div>
+        <a href="/management/image/{{ image.id }}">
+          <img src="{{ image.fileUrl }}" class="imagelist__item__image" />
+        </a>
+      </div>
+    {% endfor %}
+  </div>
+
+  <hr>
+  <div>
+    <a href="/management">管理画面TOPへもどる</a>
+  </div>
+
+{% endblock %}

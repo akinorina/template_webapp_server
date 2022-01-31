@@ -16,9 +16,6 @@ import passport from '../../passport'
 import { getAllParameters } from '../../lib/libServer'
 import Mailer from '../../lib/Mailer'
 
-// twig
-import Twig from 'twig'
-
 // サーバー設定
 import serverConfig from '../../config/server_config'
 
