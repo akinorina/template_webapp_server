@@ -3,13 +3,20 @@
  */
 
 import express from 'express'
-// import { consoleLogger } from './log/logger';
+
+// console logger
+import consoleLogger from './log/consoleLogger'
 
 /**
  * get Parameters, Queries, body parameters
  */
 export function getAllParameters (req: express.Request) {
   const params: { [key: string]: any } = {};
+
+  // files
+  if (req.files) {
+    params['__files'] = req.files;
+  }
 
   // params
   Object.keys(req.params).forEach((sKey: string) => {

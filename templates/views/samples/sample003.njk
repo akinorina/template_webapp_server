@@ -1,0 +1,67 @@
+{% extends '../layouts/normal.njk' %}
+
+{% block body %}
+  <h1>template_webapp_server</h1>
+  <p>page: sample003</p>
+
+  <div>
+    <form action="/samples/sample003" method="post">
+      <input type="file" id="file" accept="image/*" />
+      <input type="hidden" id="file_name" name="file_name" value="">
+      <input type="hidden" id="file_content" name="file_content" value="">
+      <input type="hidden" id="file_mimetype" name="file_mimetype" value="">
+      <input type="submit" name="submit" value="send">
+    </form>
+    <div id="preview">
+    </div>
+  </div>
+
+  <ul>
+    <li><a href="/management">管理画面</a></li>
+    <li><a href="/">TOP</a></li>
+    <li><a href="/samples/">samples</a></li>
+    <li><a href="/samples/sample001">sample001</a></li>
+    <li><a href="/samples/sample002">sample002</a></li>
+    <li><a href="/samples/sample003">sample003</a></li>
+  </ul>
+
+  <script>
+    //
+    let upload_file = (e) => {
+      // target
+      let targetFiles = e.target.files;
+
+      // file_name
+      let FileName = document.getElementById('file_name');
+      FileName.value = targetFiles[0].name;
+      // file_content
+      let FileContent = document.getElementById('file_content');
+      // file_mimetype
+      let FileMimetype = document.getElementById('file_mimetype');
+
+      // preview (reset)
+      let preview = document.getElementById('preview');
+      preview.innerHTML = "";
+
+      //
+      let reader = new FileReader();
+      reader.addEventListener('load', () => {
+        // file_content
+        let imageInfos = reader.result.match(/^data:(.*);base64,(.*)$/);
+        FileContent.value = imageInfos[2];
+        FileMimetype.value = imageInfos[1];
+        // console.log('imageInfos: ', imageInfos);
+
+        // preview images.
+        let img = new Image();
+        img.src = reader.result;
+        img.height = 100;
+        preview.appendChild(img);
+      });
+      reader.readAsDataURL(targetFiles[0]);
+    };
+
+    let imageFile = document.getElementById('file');
+    imageFile.addEventListener('change', upload_file);
+  </script>
+{% endblock %}

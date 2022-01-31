@@ -2,6 +2,15 @@
  * サーバー設定データ
  */
 
+// dotenv
+import dotenv from 'dotenv'
+
+// application logger
+import applicationLogger from '../lib/log/applicationLogger'
+
+// .env取得
+dotenv.config();
+
 // ----
 // [1]. 設定 (default)
 // ----
@@ -37,7 +46,7 @@ const serverConfig: any = {
 
     // CORS対応実装
     cors: {
-      allowed_origins: [ 'http://localhost:4000' ]
+      allowed_origins: 'http://www.example.com'
     }
   },
 
@@ -59,6 +68,13 @@ const serverConfig: any = {
   app: {
     // application 名称
     name: "template_webapp",
+
+    // 画像管理
+    image_management: {
+      maxSize: 2 * 1024 * 1024, // 2MB
+      mimeType: ['image/png', 'image/jpeg'],
+      savedImageDir: 'image_manager',
+    },
 
     // メール送信設定
     send_mails: {
@@ -103,7 +119,6 @@ if (process.env.COOKIE_DOMAIN) {
 if (process.env.CORS_ALLOWED_ORIGINS) {
   serverConfig.server.cors.allowed_origins = process.env.CORS_ALLOWED_ORIGINS.split(' ');
 }
-
 // SMTP server設定
 if (process.env.SMTP_HOST) {
   serverConfig.smtp.host = process.env.SMTP_HOST;
