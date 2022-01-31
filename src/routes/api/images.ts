@@ -55,7 +55,7 @@ imagesRouter.get('/', isAuthenticatedForApi, async function (req, res, next) {
   // consoleLogger.debug('parameters', parameters);
 
   // (2). DBアクセス
-  const options: any = { skip: 0, take: 10, where: [] };
+  const options: any = { skip: 0, take: 10, where: [ { userId: req.user.id } ] };
   if (parameters.start !== undefined && typeof parseInt(parameters.start) === 'number') {
     options.skip = parseInt(parameters.start);
   }
@@ -63,9 +63,7 @@ imagesRouter.get('/', isAuthenticatedForApi, async function (req, res, next) {
     options.take = parseInt(parameters.limit);
   }
   if (typeof parameters.q === 'string') {
-    options.where = [
-      { name: Like('%' + parameters.q + '%') }
-    ];
+    options.where.push({ name: Like('%' + parameters.q + '%') });
   }
   // consoleLogger.debug('--- options: ', options);
   const result = await getConnection().getRepository(Image).findAndCount(options);
@@ -85,7 +83,7 @@ imagesRouter.get('/', isAuthenticatedForApi, async function (req, res, next) {
 // ------------------------------------------------------------------------------------------
 // #create
 // ------------------------------------------------------------------------------------------
-imagesRouter.post('/', isAuthenticatedForApi, async function (req, res, next) {
+imagesRouter.post('/', isAuthenticatedForApi, async function (req: express.Request, res: express.Response, next: express.NextFunction) {
   // consoleLogger.info('--- run /api/images/ #create --- start. ---')
 
   // (1). パラメータ取得
@@ -197,7 +195,7 @@ imagesRouter.get('/:id', isAuthenticatedForApi, async function (req, res, next) 
   // consoleLogger.debug('parameters', parameters);
 
   // (2). DBアクセス、対応する個人データ取得
-  const options: any = { id: parameters.id };
+  const options: any = { id: parameters.id, userId: req.user.id };
   const result = await getConnection().getRepository(Image).findAndCount(options);
   // consoleLogger.debug('--- result: ', result);
 
@@ -318,7 +316,7 @@ imagesRouter.put('/:id', isAuthenticatedForApi, async function (req, res, next) 
   // consoleLogger.debug('imageData: ', imageData)
 
   // 生成実行
-  let updatedImage = await getConnection()
+  const updatedImage = await getConnection()
         .createQueryBuilder()
         .update(Image)
         .set(imageData)

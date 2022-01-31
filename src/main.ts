@@ -68,10 +68,9 @@ try {
   });
   app.set('view engine', serverConfig.server.view.type);
 
-  app.use(express.json());
+  app.use(express.json({limit: '100mb'}));
   app.use(express.urlencoded({ extended: false }));
   app.use(cookieParser());
-  app.use(bodyParser.urlencoded({extended: true}));
   app.use(express.static(path.join(APP_ROOT, serverConfig.server.static.static_file_path_root)));
 
   // express-fileupload モジュールを使用
