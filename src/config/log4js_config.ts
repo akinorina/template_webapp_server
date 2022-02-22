@@ -55,7 +55,7 @@ export default {
       // 日毎にファイル分割
       pattern: 'yyyy-MM-dd',
       // 5日分の世代管理設定
-      daysToKeep: 5,
+      numBackups: 5,
       //
       compress: true,
       //
