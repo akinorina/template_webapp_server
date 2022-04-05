@@ -29,7 +29,8 @@ import { getAllParameters } from '../../lib/libServer'
 import { isAuthenticatedForApi } from '../../lib/libAuth'
 
 // DB access by TypeORM
-import { getConnection, getRepository, Like } from "typeorm";
+import { Like } from "typeorm";
+import dataSource from '../../dataSource'
 import { Image } from '../../entity/Image';
 
 // console logger
@@ -66,7 +67,7 @@ imagesRouter.get('/', isAuthenticatedForApi, async function (req, res, next) {
     options.where.push({ name: Like('%' + parameters.q + '%') });
   }
   // consoleLogger.debug('--- options: ', options);
-  const result = await getConnection().getRepository(Image).findAndCount(options);
+  const result = await dataSource.getRepository(Image).findAndCount(options);
   // consoleLogger.debug('--- ', result);
 
   // (3). レスポンスデータ作成、レスポンス
@@ -164,12 +165,12 @@ imagesRouter.post('/', isAuthenticatedForApi, async function (req: express.Reque
     // consoleLogger.debug('image: ', image)
 
     // 生成実行
-    await getConnection()
-          .createQueryBuilder()
-          .insert()
-          .into(Image)
-          .values(image)
-          .execute();
+    await dataSource
+      .createQueryBuilder()
+      .insert()
+      .into(Image)
+      .values(image)
+      .execute();
 
     // (4). レスポンスデータ作成、レスポンス
     const resData = { status: 'success', data: image };
@@ -196,13 +197,13 @@ imagesRouter.get('/:id', isAuthenticatedForApi, async function (req, res, next) 
 
   // (2). DBアクセス、対応する個人データ取得
   const options: any = { id: parameters.id, userId: req.user.id };
-  const result = await getConnection().getRepository(Image).findAndCount(options);
-  // consoleLogger.debug('--- result: ', result);
+  const image = await dataSource.getRepository(Image).findOneBy(options)
+  // consoleLogger.debug('--- image: ', image);
 
   // (3). レスポンスデータ作成、レスポンス
   const resData: any = { status: 'success', data: null };
-  if (result[1] === 1) {
-    resData.data = result[0];
+  if (image != null) {
+    resData.data = image
   }
   res.json(resData);
 
@@ -220,12 +221,15 @@ imagesRouter.put('/:id', isAuthenticatedForApi, async function (req, res, next) 
   // consoleLogger.debug('parameters', parameters);
 
   // IDによる対象データ取得
-  const images = await Image.findByIds(parameters.id)
-  // consoleLogger.debug('images[0]: ', images[0])
+  const image = await dataSource.getRepository(Image).findOneBy({ id: parameters.id })
+  if (image == null) {
+    throw new Error('could not find the image id: ' + parameters.id)
+  }
+  // consoleLogger.debug('image: ', image)
 
   // 画像の所有者ユーザーID確認
   const user_id = req.user ? req.user.id : 0;
-  if (user_id != images[0].userId) {
+  if (user_id != image.userId) {
     // ユーザーが異なる場合はエラー
     consoleLogger.error('image data were modified by the invalid user.')
     const resData = { status: 'failure', data: null };
@@ -234,15 +238,15 @@ imagesRouter.put('/:id', isAuthenticatedForApi, async function (req, res, next) 
   }
   
   // 画像ID
-  let image_id = images[0].id;
+  let image_id = image.id;
   // 画像 mime type
-  let fileName = parameters.file_name ? parameters.file_name : images[0].fileName;
+  let fileName = parameters.file_name ? parameters.file_name : image.fileName;
   // 画像 mime type
-  let fileMimetype = images[0].fileMimetype;
+  let fileMimetype = image.fileMimetype;
   // サーバー上の保存位置
-  let filePath = images[0].filePath;
+  let filePath = image.filePath;
   // URLパス
-  let urlPath = images[0].fileUrl;
+  let urlPath = image.fileUrl;
 
   // ---
   // 画像ファイル保存
@@ -272,7 +276,6 @@ imagesRouter.put('/:id', isAuthenticatedForApi, async function (req, res, next) 
       if (fs.existsSync(path.join(APP_ROOT, filePath))) {
         fs.rmSync(path.join(APP_ROOT, filePath));
       }
-
 
       // ---
       // ファイルを保存・配置
@@ -316,7 +319,7 @@ imagesRouter.put('/:id', isAuthenticatedForApi, async function (req, res, next) 
   // consoleLogger.debug('imageData: ', imageData)
 
   // 生成実行
-  const updatedImage = await getConnection()
+  const updatedImage = await dataSource
         .createQueryBuilder()
         .update(Image)
         .set(imageData)
@@ -344,12 +347,15 @@ imagesRouter.patch('/:id', isAuthenticatedForApi, async function (req, res, next
   // consoleLogger.debug('parameters', parameters);
 
   // IDによる対象データ取得
-  const images = await Image.findByIds(parameters.id)
-  // consoleLogger.debug('images[0]: ', images[0])
+  const image = await dataSource.getRepository(Image).findOneBy({ id: parameters.id })
+  if (image == null) {
+    throw new Error('could not find the image id: ' + parameters.id)
+  }
+  // consoleLogger.debug('image: ', image)
 
   // 画像の所有者ユーザーID確認
   const user_id = req.user ? req.user.id : 0;
-  if (user_id != images[0].userId) {
+  if (user_id != image.userId) {
     // ユーザーが異なる場合はエラー
     consoleLogger.error('image data were modified by the invalid user.')
     const resData = { status: 'failure', data: null };
@@ -358,15 +364,15 @@ imagesRouter.patch('/:id', isAuthenticatedForApi, async function (req, res, next
   }
   
   // 画像ID
-  let image_id = images[0].id;
+  let image_id = image.id;
   // 画像 mime type
-  let fileName = parameters.file_name ? parameters.file_name : images[0].fileName;
+  let fileName = parameters.file_name ? parameters.file_name : image.fileName;
   // 画像 mime type
-  let fileMimetype = images[0].fileMimetype;
+  let fileMimetype = image.fileMimetype;
   // サーバー上の保存位置
-  let filePath = images[0].filePath;
+  let filePath = image.filePath;
   // URLパス
-  let urlPath = images[0].fileUrl;
+  let urlPath = image.fileUrl;
 
   // ---
   // 画像ファイル保存
@@ -396,7 +402,6 @@ imagesRouter.patch('/:id', isAuthenticatedForApi, async function (req, res, next
       if (fs.existsSync(path.join(APP_ROOT, filePath))) {
         fs.rmSync(path.join(APP_ROOT, filePath));
       }
-
 
       // ---
       // ファイルを保存・配置
@@ -440,7 +445,7 @@ imagesRouter.patch('/:id', isAuthenticatedForApi, async function (req, res, next
   // consoleLogger.debug('imageData: ', imageData)
 
   // 生成実行
-  const updatedImage = await getConnection()
+  const updatedImage = await dataSource
         .createQueryBuilder()
         .update(Image)
         .set(imageData)
@@ -468,17 +473,16 @@ imagesRouter.delete('/:id', isAuthenticatedForApi, async function (req, res, nex
   // consoleLogger.debug('parameters', parameters);
 
   // (2). 生成データ作成
-  const images = await Image.findByIds(parameters.id);
-  const image = images[0];
+  const image = await dataSource.getRepository(Image).findOneBy({ id: parameters.id })
   // consoleLogger.debug('image: ', image);
 
-  if (image === undefined) {
+  if (image == null) {
     // 見つからない場合、レスポンスデータ作成、レスポンス
     const resData = { status: 'failure', data: null };
     res.json(resData);
   } else {
     // (3). DBアクセス、データ削除実行
-    const deletedImage = await getConnection().getRepository(Image).softDelete(image.id);
+    const deletedImage = await dataSource.getRepository(Image).softDelete(image.id);
     // consoleLogger.debug('deletedImage: ', deletedImage);
 
     // (4). レスポンスデータ作成、レスポンス
