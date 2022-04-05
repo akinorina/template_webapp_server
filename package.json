@@ -27,7 +27,7 @@
     "passport-local": "^1.0.0",
     "reflect-metadata": "^0.1.13",
     "twig": "^1.15.4",
-    "typeorm": "^0.2.45"
+    "typeorm": "^0.3.4"
   },
   "devDependencies": {
     "@types/cookie-parser": "^1.4.2",
