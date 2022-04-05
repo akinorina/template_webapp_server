@@ -1,13 +1,9 @@
 import express from 'express'
-import path from 'path'
 import moment from 'moment'
 
 // DB access by TypeORM
-import { getConnection, getRepository, Like } from "typeorm"
+import dataSource from '../../dataSource'
 import { User } from '../../entity/User'
-
-// nodemailer
-import nodemailer from 'nodemailer'
 
 // passport
 import passport from '../../passport'
@@ -73,40 +69,40 @@ router.post('/regist', async function (req, res, next) {
   user.userType = parameters.userType;
 
   // (3). DBアクセス、データ保存実行
-  const savedUser = await getConnection().getRepository(User).save(user);
+  const savedUser = await dataSource.getRepository(User).save(user);
   // consoleLogger.debug('savedUser: ', savedUser);
 
-  // 登録情報
-  const registData: any = {
-    createdAt: moment(savedUser.createdAt).format("YYYY/M/D H:mm:ss"),
-    name: savedUser.name,
-    nameKana: savedUser.nameKana,
-    email: savedUser.email,
-    userType: savedUser.userType
-  }
+  // // 登録情報
+  // const registData: any = {
+  //   createdAt: moment(savedUser.createdAt).format("YYYY/M/D H:mm:ss"),
+  //   name: savedUser.name,
+  //   nameKana: savedUser.nameKana,
+  //   email: savedUser.email,
+  //   userType: savedUser.userType
+  // }
 
-  // (4). ユーザー登録告知メール送信
-  const myMailer = new Mailer(serverConfig.smtp);
+  // // (4). ユーザー登録告知メール送信
+  // const myMailer = new Mailer(serverConfig.smtp);
 
-  // メール送信: to admin
-  myMailer.sendMaiilWithTemplates({
-    from: serverConfig.app.send_mails.regist_user.to_admin.from,
-    to:  serverConfig.app.send_mails.regist_user.to_admin.to,
-    subject:  serverConfig.app.send_mails.regist_user.to_admin.subject,
-    templateData: registData,
-    templateTextFilePath: serverConfig.app.send_mails.regist_user.to_admin.template_text_file_path,
-    templateHtmlFilePath: serverConfig.app.send_mails.regist_user.to_admin.template_html_html_path,
-  })
+  // // メール送信: to admin
+  // myMailer.sendMaiilWithTemplates({
+  //   from: serverConfig.app.send_mails.regist_user.to_admin.from,
+  //   to:  serverConfig.app.send_mails.regist_user.to_admin.to,
+  //   subject:  serverConfig.app.send_mails.regist_user.to_admin.subject,
+  //   templateData: registData,
+  //   templateTextFilePath: serverConfig.app.send_mails.regist_user.to_admin.template_text_file_path,
+  //   templateHtmlFilePath: serverConfig.app.send_mails.regist_user.to_admin.template_html_html_path,
+  // })
 
-  // メール送信: to user
-  myMailer.sendMaiilWithTemplates({
-    from: serverConfig.app.send_mails.regist_user.to_user.from,
-    to: registData.name + ' <' + registData.email + '>',
-    subject: serverConfig.app.send_mails.regist_user.to_user.subject,
-    templateData: registData,
-    templateTextFilePath: serverConfig.app.send_mails.regist_user.to_user.template_text_file_path,
-    templateHtmlFilePath: serverConfig.app.send_mails.regist_user.to_user.template_html_file_path,
-  })
+  // // メール送信: to user
+  // myMailer.sendMaiilWithTemplates({
+  //   from: serverConfig.app.send_mails.regist_user.to_user.from,
+  //   to: registData.name + ' <' + registData.email + '>',
+  //   subject: serverConfig.app.send_mails.regist_user.to_user.subject,
+  //   templateData: registData,
+  //   templateTextFilePath: serverConfig.app.send_mails.regist_user.to_user.template_text_file_path,
+  //   templateHtmlFilePath: serverConfig.app.send_mails.regist_user.to_user.template_html_file_path,
+  // })
 
   // (5). レスポンスデータ作成、レスポンス
   const resData = { status: 'success', data: user };

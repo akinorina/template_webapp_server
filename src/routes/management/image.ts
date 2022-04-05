@@ -10,7 +10,7 @@ import path from 'path'
 import fs from 'fs'
 
 // DB access by TypeORM
-import { getConnection } from "typeorm"
+import dataSource from '../../dataSource';
 import { Image } from '../../entity/Image'
 
 // console logger
@@ -35,14 +35,14 @@ const router = express.Router()
 router.get('/', isAuthenticated, async function (req: express.Request, res: express.Response, next: express.NextFunction) {
   // パラメータ取得
   const parameters = getAllParameters(req)
-  // consoleLogger.debug('parameters', parameters)
+  consoleLogger.debug('parameters', parameters)
 
   // パラメータ設定
   const options = { where: { userId: req.user.id } };
 
   // DB access
-  const images = await Image.find(options)
-  // consoleLogger.debug('--- images: ', images)
+  const images = await dataSource.getRepository(Image).find(options)
+  consoleLogger.debug('--- images: ', images)
 
   // render page.
   const viewValues = { login_user: req.user, Images: images }
@@ -86,13 +86,13 @@ router.post('/', isAuthenticated, async function (req: express.Request, res: exp
 
     // アップロードファイルは20MB以内
     if (ele.size > serverConfig.app.image_management.maxSize) {
-      consoleLogger.error('ele.size too big! : ', ele.size);
+      // consoleLogger.error('ele.size too big! : ', ele.size);
       bValid = false;
     }
 
     // mimetype 対応確認
     if (!serverConfig.app.image_management.mimeType.includes(ele.mimetype)) {
-      consoleLogger.error('ele.mimetype bad type! : ', ele.mimetype);
+      // consoleLogger.error('ele.mimetype bad type! : ', ele.mimetype);
       bValid = false;
     }
 
@@ -136,12 +136,12 @@ router.post('/', isAuthenticated, async function (req: express.Request, res: exp
       // consoleLogger.debug('image: ', image)
 
       // 生成実行
-      await getConnection()
-            .createQueryBuilder()
-            .insert()
-            .into(Image)
-            .values(image)
-            .execute();
+      await dataSource
+        .createQueryBuilder()
+        .insert()
+        .into(Image)
+        .values(image)
+        .execute()
     }
   })
 
@@ -158,11 +158,11 @@ router.get('/:id', isAuthenticated, async function (req: express.Request, res: e
   // consoleLogger.debug('parameters', parameters)
 
   // DB access
-  const image = await Image.findByIds(parameters.id)
+  const image = await dataSource.getRepository(Image).findOneBy({ id: parameters.id })
   // consoleLogger.debug('--- image: ', image)
 
   // render page.
-  const viewValues = { login_user: req.user, Image: image[0] }
+  const viewValues = { login_user: req.user, Image: image }
   res.render('management/image/detail', viewValues)
 })
 
@@ -175,11 +175,11 @@ router.get('/:id/edit', isAuthenticated, async function (req: express.Request, r
   // consoleLogger.debug('parameters', parameters)
 
   // DB access
-  const image = await Image.findByIds(parameters.id)
+  const image = await dataSource.getRepository(Image).findOneBy({ id: parameters.id })
   // consoleLogger.debug('--- image: ', image)
 
   // render page.
-  const viewValues = { login_user: req.user, Image: image[0] }
+  const viewValues = { login_user: req.user, Image: image }
   res.render('management/image/edit', viewValues)
 })
 
@@ -198,17 +198,22 @@ router.post('/:id', isAuthenticated, async function (req, res, next) {
   const parameters = getAllParameters(req);
 
   // IDによる対象データ取得
-  const images = await Image.findByIds(parameters.id)
-  // consoleLogger.debug('images[0]: ', images[0])
+  const image = await dataSource.getRepository(Image).findOneBy({ id: parameters.id })
+  if (image === null) {
+    // redirect page.
+    res.redirect('/management/image')
+    return
+  }
+  // consoleLogger.debug('image: ', image)
   
   // 画像ID
-  let image_id = images[0].id;
+  let image_id = image.id;
   // 画像 mime type
-  let fileMimetype = images[0].fileMimetype;
+  let fileMimetype = image.fileMimetype;
   // サーバー上の保存位置
-  let filePath = images[0].filePath;
+  let filePath = image.filePath;
   // URLパス
-  let urlPath = images[0].fileUrl;
+  let urlPath = image.fileUrl;
 
   // 画像ファイル指定がある場合はDBに画像を保存
   if (parameters.__files && parameters.__files.images) {
@@ -223,13 +228,13 @@ router.post('/:id', isAuthenticated, async function (req, res, next) {
 
     // アップロードファイルは20MB以内
     if (imageList[0].size > serverConfig.app.image_management.maxSize) {
-      consoleLogger.error('imageList[0].size too big! : ', imageList[0].size);
+      // consoleLogger.error('imageList[0].size too big! : ', imageList[0].size);
       bValid = false;
     }
 
     // mimetype 対応確認
     if (!serverConfig.app.image_management.mimeType.includes(imageList[0].mimetype)) {
-      consoleLogger.error('imageList[0].mimetype bad type! : ', imageList[0].mimetype);
+      // consoleLogger.error('imageList[0].mimetype bad type! : ', imageList[0].mimetype);
       bValid = false;
     }
 
@@ -284,12 +289,12 @@ router.post('/:id', isAuthenticated, async function (req, res, next) {
   // consoleLogger.debug('imageData: ', imageData)
 
   // 生成実行
-  await getConnection()
-        .createQueryBuilder()
-        .update(Image)
-        .set(imageData)
-        .where("id = :id", { id: image_id })
-        .execute();
+  await dataSource
+    .createQueryBuilder()
+    .update(Image)
+    .set(imageData)
+    .where("id = :id", { id: image_id })
+    .execute()
 
   // redirect page.
   res.redirect(`/management/image/${image_id}`)
@@ -307,11 +312,11 @@ router.get('/:id/delete', isAuthenticated, async function (req, res, next) {
   // const connection = getConnection()
 
   // DB access
-  const image = await Image.findByIds(parameters.id)
+  const image = await dataSource.getRepository(Image).findOneBy({ id: parameters.id })
   // consoleLogger.debug('--- image: ', image)
 
   // render page.
-  const viewValues = { login_user: req.user, Image: image[0] }
+  const viewValues = { login_user: req.user, Image: image }
   res.render('management/image/delete', viewValues)
 })
 
@@ -324,8 +329,12 @@ router.post('/:id/delete', isAuthenticated, async function (req, res, next) {
   // consoleLogger.debug('parameters', parameters)
 
   // IDによる対象データ取得
-  const images = await Image.findByIds(parameters.id)
-  const image = images[0]
+  const image = await dataSource.getRepository(Image).findOneBy({ id: parameters.id })
+  if (image === null) {
+    // redirect to user top.
+    res.redirect('/management/image/')
+    return
+  }
   // consoleLogger.debug('image: ', image)
 
   // 画像ファイルの物理削除
@@ -334,7 +343,7 @@ router.post('/:id/delete', isAuthenticated, async function (req, res, next) {
   }
 
   // 削除実行
-  await getConnection().getRepository(Image).softDelete(image.id)
+  await dataSource.getRepository(Image).softDelete(image.id)
 
   // redirect to user top.
   res.redirect('/management/image/')

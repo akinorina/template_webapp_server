@@ -3,7 +3,7 @@ import passport from 'passport'
 import { Strategy as LocalStrategy } from 'passport-local'
 
 // DB access by TypeORM
-import {getConnection} from "typeorm"
+import dataSource from './dataSource'
 import { User } from './entity/User'
 
 // console logger
@@ -37,7 +37,7 @@ passport.use(new LocalStrategy(
     try {
       // DBアクセス
       // DBからユーザーを検索
-      const result: any = await getConnection().getRepository(User).findAndCount(options)
+      const result: any = await dataSource.getRepository(User).findAndCount(options)
       // consoleLogger.debug('--- passport.use() --- result: ', result)
 
       if (result[1] === 1) {

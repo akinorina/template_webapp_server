@@ -24,13 +24,13 @@ export class Image extends BaseEntity {
   @Column({ default: '', comment: '画像URLパス' })
   fileUrl: string = "";
 
-  @CreateDateColumn({ comment: '作成日時', type: 'datetime', precision: 6, nullable: true })
-  createdAt: string | undefined | null = null;
+  @CreateDateColumn({ comment: '作成日時', type: 'timestamp', precision: 6, nullable: false })
+  createdAt: Date | number | undefined = undefined
 
-  @UpdateDateColumn({ comment: '更新日時', type: 'datetime', precision: 6, nullable: true })
-  updatedAt: string | undefined | null = null;
+  @UpdateDateColumn({ comment: '更新日時', type: 'timestamp', precision: 6, nullable: false })
+  updatedAt: Date | number | undefined = undefined
 
-  @DeleteDateColumn({ comment: '削除日時', type: 'datetime', precision: 6, nullable: true, default: null })
-  deletedAt: string | undefined | null = null;
+  @DeleteDateColumn({ comment: '削除日時', type: 'timestamp', precision: 6, nullable: true, default: null })
+  deletedAt: Date | number | undefined = undefined
 }
  

@@ -25,7 +25,8 @@ import { getAllParameters } from '../../lib/libServer'
 import { isAuthenticatedForApi } from '../../lib/libAuth'
 
 // DB access by TypeORM
-import { getConnection, getRepository, Like } from "typeorm";
+import { Like } from "typeorm";
+import dataSource from '../../dataSource';
 import { User } from '../../entity/User';
 
 // console logger
@@ -45,7 +46,7 @@ usersRouter.get('/', isAuthenticatedForApi, async function (req, res, next) {
   // consoleLogger.debug('parameters', parameters);
 
   // (2). DBアクセス
-  const options: any = { skip: 0, take: 10, where: [] };
+  const options: any = { skip: 0, take: 10, where: null };
   if (parameters.start !== undefined && typeof parseInt(parameters.start) === 'number') {
     options.skip = parseInt(parameters.start);
   }
@@ -60,7 +61,7 @@ usersRouter.get('/', isAuthenticatedForApi, async function (req, res, next) {
     ];
   }
   // consoleLogger.debug('--- options: ', options);
-  const result = await getConnection().getRepository(User).findAndCount(options);
+  const result = await dataSource.getRepository(User).findAndCount(options)
   // consoleLogger.debug('--- ', result);
 
   // (3). レスポンスデータ作成、レスポンス
@@ -93,7 +94,7 @@ usersRouter.post('/', isAuthenticatedForApi, async function (req, res, next) {
   user.userType = parameters.userType;
 
   // (3). DBアクセス、データ保存実行
-  const savedUser = await getConnection().getRepository(User).save(user);
+  const savedUser = await dataSource.getRepository(User).save(user);
   // consoleLogger.debug('savedUser: ', savedUser);
 
   // (4). レスポンスデータ作成、レスポンス
@@ -115,15 +116,12 @@ usersRouter.get('/:id', isAuthenticatedForApi, async function (req, res, next) {
   // consoleLogger.debug('parameters', parameters);
 
   // (2). DBアクセス、対応する個人データ取得
-  const options: any = { id: parameters.id };
-  const result = await getConnection().getRepository(User).findAndCount(options);
+  const options: any = { id: Number(parameters.id) };
+  const result = await dataSource.getRepository(User).findOneBy({ id: parameters.id }) // .findOneBy({ id: parameters.id })
   // consoleLogger.debug('--- result: ', result);
 
   // (3). レスポンスデータ作成、レスポンス
-  const resData: any = { status: 'success', data: null };
-  if (result[1] === 1) {
-    resData.data = result[0];
-  }
+  const resData: any = { status: 'success', data: result };
   res.json(resData);
 
   // consoleLogger.info('--- run /api/users/:id #show --- end. ---')
@@ -140,9 +138,9 @@ usersRouter.put('/:id', isAuthenticatedForApi, async function (req, res, next) {
   // consoleLogger.debug('parameters', parameters);
 
   // (2). 生成データ作成
-  const users = await User.findByIds(parameters.id);
-  const user = users[0];
-  if (user === undefined) {
+  const user = await dataSource.getRepository(User).findOneBy({ id: parameters.id })
+  // consoleLogger.debug('--- user: ', user)
+  if (user == null) {
     // 見つからない場合、レスポンスデータ作成、レスポンス
     const resData = { status: 'failure', data: null };
     res.json(resData);
@@ -162,10 +160,10 @@ usersRouter.put('/:id', isAuthenticatedForApi, async function (req, res, next) {
     if (parameters.userType !== undefined) {
       user.userType = parameters.userType;
     }
-    // consoleLogger.debug('user: ', user);
+    // consoleLogger.debug('--- user: ', user);
 
     // (3). DBアクセス、データ保存実行
-    const savedUser = await getConnection().getRepository(User).save(user);
+    const savedUser = await dataSource.getRepository(User).save(user)
     // consoleLogger.debug('savedUser: ', savedUser);
 
     // (4). レスポンスデータ作成、レスポンス
@@ -188,9 +186,9 @@ usersRouter.patch('/:id', isAuthenticatedForApi, async function (req, res, next)
   // consoleLogger.debug('parameters', parameters);
 
   // (2). 生成データ作成
-  const users = await User.findByIds(parameters.id);
-  const user = users[0];
-  if (user === undefined) {
+  const user = await dataSource.getRepository(User).findOneBy({ id: parameters.id })
+  // consoleLogger.debug('--- user: ', user)
+  if (user == null) {
     // 見つからない場合、レスポンスデータ作成、レスポンス
     const resData = { status: 'failure', data: null };
     res.json(resData);
@@ -210,10 +208,10 @@ usersRouter.patch('/:id', isAuthenticatedForApi, async function (req, res, next)
     if (parameters.userType !== undefined) {
       user.userType = parameters.userType;
     }
-    // consoleLogger.debug('user: ', user);
+    // consoleLogger.debug('--- user: ', user);
 
     // (3). DBアクセス、データ保存実行
-    const savedUser = await getConnection().getRepository(User).save(user);
+    const savedUser = await dataSource.getRepository(User).save(user)
     // consoleLogger.debug('savedUser: ', savedUser);
 
     // (4). レスポンスデータ作成、レスポンス
@@ -235,17 +233,15 @@ usersRouter.delete('/:id', isAuthenticatedForApi, async function (req, res, next
   // consoleLogger.debug('parameters', parameters);
 
   // (2). 生成データ作成
-  const users = await User.findByIds(parameters.id);
-  const user = users[0];
+  const user = await dataSource.getRepository(User).findOneBy({ id: parameters.id })
   // consoleLogger.debug('user: ', user);
-
-  if (user === undefined) {
+  if (user == null) {
     // 見つからない場合、レスポンスデータ作成、レスポンス
     const resData = { status: 'failure', data: null };
     res.json(resData);
   } else {
     // (3). DBアクセス、データ削除実行
-    const deletedUser = await getConnection().getRepository(User).softDelete(user.id);
+    const deletedUser = await dataSource.getRepository(User).softDelete(user.id);
     // consoleLogger.debug('deletedUser: ', deletedUser);
 
     // (4). レスポンスデータ作成、レスポンス
