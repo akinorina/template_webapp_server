@@ -43,12 +43,12 @@ import consoleLogger from './lib/log/consoleLogger'
 // Routings
 import indexRouter from './routes/index'
 import samplesRouter from './routes/samples'
-// import authRouter from './routes/auth'
-// import managementIndexRouter from './routes/management/index'
+import authRouter from './routes/auth'
+import managementIndexRouter from './routes/management/index'
 // import managementUserRouter from './routes/management/user'
 // import managementImageRouter from './routes/management/image'
 // Routings for API
-// import apiAuthRouter from './routes/api/auth'
+import apiAuthRouter from './routes/api/auth'
 // import apiUsersRouter from './routes/api/users'
 // import apiImagesRouter from './routes/api/images'
 
@@ -95,12 +95,12 @@ try {
     // Routings
     app.use('/', indexRouter);
     app.use('/samples', samplesRouter);
-    // app.use('/auth', authRouter);
-    // app.use('/management', managementIndexRouter);
+    app.use('/auth', authRouter);
+    app.use('/management', managementIndexRouter);
     // app.use('/management/user', managementUserRouter);
     // app.use('/management/image', managementImageRouter);
-    // // Routings for API
-    // app.use('/api/auth', apiAuthRouter);
+    // Routings for API
+    app.use('/api/auth', apiAuthRouter);
     // app.use('/api/users', apiUsersRouter);
     // app.use('/api/images', apiImagesRouter);
 
