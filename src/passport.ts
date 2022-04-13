@@ -7,7 +7,7 @@ import dataSource from './dataSource'
 import { User } from './entity/User'
 
 // console logger
-// import consoleLogger from './lib/log/consoleLogger'
+import consoleLogger from './lib/log/consoleLogger'
 
 // Passport serialize / deserialize
 passport.serializeUser(function (user: any, done) {
@@ -44,7 +44,7 @@ passport.use(new LocalStrategy(
         // 認証成功
         const targetUser = { id: '', name: '', email: '' }
         targetUser.id = result[0][0].id
-        targetUser.name = result[0][0].name
+        targetUser.name = result[0][0].familyName + result[0][0].firstName
         targetUser.email = result[0][0].email
         // consoleLogger.debug('--- targetUser: ', targetUser);
         return done(null, targetUser)
