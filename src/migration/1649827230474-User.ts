@@ -1,13 +1,15 @@
 import { MigrationInterface, QueryRunner } from "typeorm"
 
-export class User1649144414353 implements MigrationInterface {
+export class User1649827230474 implements MigrationInterface {
 
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.query(
             `INSERT \`user\` SET
                 \`id\` = 1,
-                \`name\` = "管理者",
-                \`nameKana\` = "かんりしゃ",
+                \`familyName\` = "管理",
+                \`firstName\` = "者",
+                \`familyNameKana\` = "かんり",
+                \`firstNameKana\` = "しゃ",
                 \`email\` = "admin@example.com",
                 \`password\` = "admin",
                 \`userType\` = "admin",

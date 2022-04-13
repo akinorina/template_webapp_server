@@ -34,7 +34,7 @@ import dataSource from '../../dataSource'
 import { Image } from '../../entity/Image';
 
 // console logger
-import consoleLogger from '../../lib/log/consoleLogger'
+// import consoleLogger from '../../lib/log/consoleLogger'
 
 // サーバー設定
 import serverConfig from '../../config/server_config'
@@ -87,15 +87,14 @@ imagesRouter.get('/', isAuthenticatedForApi, async function (req, res, next) {
 imagesRouter.post('/', isAuthenticatedForApi, async function (req: express.Request, res: express.Response, next: express.NextFunction) {
   // consoleLogger.info('--- run /api/images/ #create --- start. ---')
 
-  // (1). パラメータ取得
-  const parameters = getAllParameters(req);
-  // consoleLogger.debug('parameters', parameters);
-
-  // (2). ログインユーザーCHECK
+  // (1). ログインユーザーCHECK
   if (!req.user) {
     throw new Error('not login.');
   }
 
+  // (2). パラメータ取得
+  const parameters = getAllParameters(req);
+  // consoleLogger.debug('parameters', parameters);
   if (!parameters.file_content) {
     // redirect to management-top.
     res.redirect('/management/image');
@@ -108,26 +107,25 @@ imagesRouter.post('/', isAuthenticatedForApi, async function (req: express.Reque
   // ---
   // ファイル画像データ
   const targetImageData = String(parameters.file_content);
-  let bValid = true;
+  // 画像UPLOADエラー
+  let errorMessages: Array<any> = [];
 
-  //
+  // ファイルデータサイズ > 0 
   if (targetImageData == '') {
-    bValid = false;
+    errorMessages.push({ filename: parameters.file_name, message: 'image size is zero. : ' })
   }
 
-  // アップロードファイルは20MB以内
+  // アップロードファイルサイズ確認
   if (targetImageData.length > serverConfig.app.image_management.maxSize) {
-    consoleLogger.error('ele.size too big! : ', targetImageData.length);
-    bValid = false;
+    errorMessages.push({ filename: parameters.file_name, message: 'image size is too big! : ' + targetImageData.length })
   }
 
   // mimetype 対応確認
   if (!serverConfig.app.image_management.mimeType.includes(parameters.file_mimetype)) {
-    consoleLogger.error('ele.mimetype bad type! : ', parameters.file_mimetype);
-    bValid = false;
+    errorMessages.push({ filename: parameters.file_name, message: 'image mime_type is invalid: ' + parameters.file_mimetype })
   }
 
-  if (bValid) {
+  if (errorMessages.length == 0) {
     // ---
     // ファイルを保存・配置
     // ---
@@ -216,11 +214,23 @@ imagesRouter.get('/:id', isAuthenticatedForApi, async function (req, res, next) 
 imagesRouter.put('/:id', isAuthenticatedForApi, async function (req, res, next) {
   // consoleLogger.info('--- run /api/images/:id #update --- start. ---')
 
-  // (1). パラメータ取得
+  // (1). ログインユーザーCHECK
+  if (!req.user) {
+    throw new Error('not login.');
+  }
+
+  // (2). パラメータ取得
   const parameters = getAllParameters(req);
+  if (!parameters.file_content) {
+    // redirect to management-top.
+    res.redirect('/management/image');
+    return;
+  }
   // consoleLogger.debug('parameters', parameters);
 
+  // ---
   // IDによる対象データ取得
+  // ---
   const image = await dataSource.getRepository(Image).findOneBy({ id: parameters.id })
   if (image == null) {
     throw new Error('could not find the image id: ' + parameters.id)
@@ -231,16 +241,15 @@ imagesRouter.put('/:id', isAuthenticatedForApi, async function (req, res, next) 
   const user_id = req.user ? req.user.id : 0;
   if (user_id != image.userId) {
     // ユーザーが異なる場合はエラー
-    consoleLogger.error('image data were modified by the invalid user.')
-    const resData = { status: 'failure', data: null };
-    res.json(resData);
+    const errorMessage = 'image data were modified by the invalid user.';
+    // consoleLogger.error(errorMessage)
+    res.json({ status: 'failure', data: null, message: errorMessage });
     return false;
   }
-  
   // 画像ID
   let image_id = image.id;
   // 画像 mime type
-  let fileName = parameters.file_name ? parameters.file_name : image.fileName;
+  let fileName = image.fileName;
   // 画像 mime type
   let fileMimetype = image.fileMimetype;
   // サーバー上の保存位置
@@ -249,59 +258,65 @@ imagesRouter.put('/:id', isAuthenticatedForApi, async function (req, res, next) 
   let urlPath = image.fileUrl;
 
   // ---
-  // 画像ファイル保存
+  // ファイル保存、DB登録
   // ---
-  let bValid = true;
+  // ファイル画像データ
+  const targetImageData = String(parameters.file_content);
+  // 画像UPLOADエラー
+  let errorMessages: Array<any> = [];
 
-  //
-  if (parameters.file_content) {
+  // ファイルデータサイズ > 0
+  if (targetImageData == '') {
+    errorMessages.push({ filename: parameters.file_name, message: 'image size is zero. : ' })
+  }
 
-    // アップロードファイルは20MB以内
-    if (parameters.file_content.size > serverConfig.app.image_management.maxSize) {
-      consoleLogger.error('parameters.file_content.size too big! : ', parameters.file_content.size);
-      bValid = false;
+  // アップロードファイルサイズ確認
+  if (targetImageData.length > serverConfig.app.image_management.maxSize) {
+    errorMessages.push({ filename: parameters.file_name, message: 'image size is too big! : ' + targetImageData.length })
+  }
+
+  // mimetype 対応確認
+  if (!serverConfig.app.image_management.mimeType.includes(parameters.file_mimetype)) {
+    errorMessages.push({ filename: parameters.file_name, message: 'image mime_type is invalid: ' + parameters.file_mimetype })
+  }
+  // consoleLogger.debug('errorMessages: ', errorMessages);
+
+  if (errorMessages.length == 0) {
+    // ---
+    // 既存ファイルの削除
+    // ---
+    // 画像ファイルの物理削除
+    if (fs.existsSync(path.join(APP_ROOT, filePath))) {
+      fs.rmSync(path.join(APP_ROOT, filePath));
     }
 
-    // mimetype 対応確認
-    if (!serverConfig.app.image_management.mimeType.includes(parameters.file_mimetype)) {
-      consoleLogger.error('parameters.file_content.mimetype bad type! : ', parameters.file_mimetype);
-      bValid = false;
+    // ---
+    // ファイルを保存・配置
+    // ---
+    // 保存するファイル名は同じファイル名が生じるケースを考えてDate.now()をつけたす
+    let uploadFileExt = path.extname(parameters.file_name);
+    let saveFilename = `${path.basename(parameters.file_name, uploadFileExt)}-${Date.now()}${uploadFileExt}`;
+
+    // サーバー上の保存位置
+    let savedDir = `${serverConfig.app.image_management.savedImageDir}/${req.user.id}/`;
+    if (!fs.existsSync(path.join(APP_ROOT, 'public', savedDir))) {
+      // 保存先ディレクトリが無い場合は作成
+      fs.mkdirSync(path.join(APP_ROOT, 'public', savedDir), { recursive: true, mode: 0o777 });
     }
+    // file path
+    filePath = `public/${savedDir}${saveFilename}`;
+    // URL path
+    urlPath = `/${savedDir}${saveFilename}`;
+    // file name
+    fileName = parameters.file_name;
+    // mime type
+    fileMimetype = parameters.file_mimetype;
 
-    if (bValid) {
-      // ---
-      // 既存ファイルの削除
-      // ---
-      // 画像ファイルの物理削除
-      if (fs.existsSync(path.join(APP_ROOT, filePath))) {
-        fs.rmSync(path.join(APP_ROOT, filePath));
-      }
-
-      // ---
-      // ファイルを保存・配置
-      // ---
-      // 保存するファイル名は同じファイル名が生じるケースを考えてDate.now()をつけたす
-      let uploadFileExt = path.extname(parameters.file_name);
-      let saveFilename = `${path.basename(parameters.file_name, uploadFileExt)}-${Date.now()}${uploadFileExt}`;
-
-      // サーバー上の保存位置
-      let savedDir = `${serverConfig.app.image_management.savedImageDir}/${req.user.id}/`;
-      if (!fs.existsSync(path.join(APP_ROOT, 'public', savedDir))) {
-        // 保存先ディレクトリが無い場合は作成
-        fs.mkdirSync(path.join(APP_ROOT, 'public', savedDir), { recursive: true, mode: 0o777 });
-      }
-      filePath = `public/${savedDir}${saveFilename}`;
-      // URLパス
-      urlPath = `/${savedDir}${saveFilename}`;
-      // mime type
-      fileMimetype = parameters.file_mimetype;
-
-      // メモリ上にあるファイルをサーバーパスへ移動させる
-      // ファイル保存
-      const decode = Buffer.from(parameters.file_content, "base64");
-      // ファイル出力
-      fs.writeFileSync(filePath, decode);
-    }
+    // メモリ上にあるファイルをサーバーパスへ移動させる
+    // ファイル保存
+    const decode = Buffer.from(parameters.file_content, "base64");
+    // ファイル出力
+    fs.writeFileSync(filePath, decode);
   }
 
   // ---
@@ -342,11 +357,23 @@ imagesRouter.put('/:id', isAuthenticatedForApi, async function (req, res, next) 
 imagesRouter.patch('/:id', isAuthenticatedForApi, async function (req, res, next) {
   // consoleLogger.info('--- run /api/images/:id #update (patch) --- start. ---')
 
-  // (1). パラメータ取得
+  // (1). ログインユーザーCHECK
+  if (!req.user) {
+    throw new Error('not login.');
+  }
+
+  // (2). パラメータ取得
   const parameters = getAllParameters(req);
+  if (!parameters.file_content) {
+    // redirect to management-top.
+    res.redirect('/management/image');
+    return;
+  }
   // consoleLogger.debug('parameters', parameters);
 
+  // ---
   // IDによる対象データ取得
+  // ---
   const image = await dataSource.getRepository(Image).findOneBy({ id: parameters.id })
   if (image == null) {
     throw new Error('could not find the image id: ' + parameters.id)
@@ -357,16 +384,15 @@ imagesRouter.patch('/:id', isAuthenticatedForApi, async function (req, res, next
   const user_id = req.user ? req.user.id : 0;
   if (user_id != image.userId) {
     // ユーザーが異なる場合はエラー
-    consoleLogger.error('image data were modified by the invalid user.')
-    const resData = { status: 'failure', data: null };
-    res.json(resData);
+    const errorMessage = 'image data were modified by the invalid user.';
+    // consoleLogger.error(errorMessage)
+    res.json({ status: 'failure', data: null, message: errorMessage });
     return false;
   }
-  
   // 画像ID
   let image_id = image.id;
   // 画像 mime type
-  let fileName = parameters.file_name ? parameters.file_name : image.fileName;
+  let fileName = image.fileName;
   // 画像 mime type
   let fileMimetype = image.fileMimetype;
   // サーバー上の保存位置
@@ -375,59 +401,65 @@ imagesRouter.patch('/:id', isAuthenticatedForApi, async function (req, res, next
   let urlPath = image.fileUrl;
 
   // ---
-  // 画像ファイル保存
+  // ファイル保存、DB登録
   // ---
-  let bValid = true;
+  // ファイル画像データ
+  const targetImageData = String(parameters.file_content);
+  // 画像UPLOADエラー
+  let errorMessages: Array<any> = [];
 
-  //
-  if (parameters.file_content) {
+  // ファイルデータサイズ > 0
+  if (targetImageData == '') {
+    errorMessages.push({ filename: parameters.file_name, message: 'image size is zero. : ' })
+  }
 
-    // アップロードファイルは20MB以内
-    if (parameters.file_content.size > serverConfig.app.image_management.maxSize) {
-      consoleLogger.error('parameters.file_content.size too big! : ', parameters.file_content.size);
-      bValid = false;
+  // アップロードファイルサイズ確認
+  if (targetImageData.length > serverConfig.app.image_management.maxSize) {
+    errorMessages.push({ filename: parameters.file_name, message: 'image size is too big! : ' + targetImageData.length })
+  }
+
+  // mimetype 対応確認
+  if (!serverConfig.app.image_management.mimeType.includes(parameters.file_mimetype)) {
+    errorMessages.push({ filename: parameters.file_name, message: 'image mime_type is invalid: ' + parameters.file_mimetype })
+  }
+  // consoleLogger.debug('errorMessages: ', errorMessages);
+
+  if (errorMessages.length == 0) {
+    // ---
+    // 既存ファイルの削除
+    // ---
+    // 画像ファイルの物理削除
+    if (fs.existsSync(path.join(APP_ROOT, filePath))) {
+      fs.rmSync(path.join(APP_ROOT, filePath));
     }
 
-    // mimetype 対応確認
-    if (!serverConfig.app.image_management.mimeType.includes(parameters.file_mimetype)) {
-      consoleLogger.error('parameters.file_content.mimetype bad type! : ', parameters.file_mimetype);
-      bValid = false;
+    // ---
+    // ファイルを保存・配置
+    // ---
+    // 保存するファイル名は同じファイル名が生じるケースを考えてDate.now()をつけたす
+    let uploadFileExt = path.extname(parameters.file_name);
+    let saveFilename = `${path.basename(parameters.file_name, uploadFileExt)}-${Date.now()}${uploadFileExt}`;
+
+    // サーバー上の保存位置
+    let savedDir = `${serverConfig.app.image_management.savedImageDir}/${req.user.id}/`;
+    if (!fs.existsSync(path.join(APP_ROOT, 'public', savedDir))) {
+      // 保存先ディレクトリが無い場合は作成
+      fs.mkdirSync(path.join(APP_ROOT, 'public', savedDir), { recursive: true, mode: 0o777 });
     }
+    // file path
+    filePath = `public/${savedDir}${saveFilename}`;
+    // URL path
+    urlPath = `/${savedDir}${saveFilename}`;
+    // file name
+    fileName = parameters.file_name;
+    // mime type
+    fileMimetype = parameters.file_mimetype;
 
-    if (bValid) {
-      // ---
-      // 既存ファイルの削除
-      // ---
-      // 画像ファイルの物理削除
-      if (fs.existsSync(path.join(APP_ROOT, filePath))) {
-        fs.rmSync(path.join(APP_ROOT, filePath));
-      }
-
-      // ---
-      // ファイルを保存・配置
-      // ---
-      // 保存するファイル名は同じファイル名が生じるケースを考えてDate.now()をつけたす
-      let uploadFileExt = path.extname(parameters.file_name);
-      let saveFilename = `${path.basename(parameters.file_name, uploadFileExt)}-${Date.now()}${uploadFileExt}`;
-
-      // サーバー上の保存位置
-      let savedDir = `${serverConfig.app.image_management.savedImageDir}/${req.user.id}/`;
-      if (!fs.existsSync(path.join(APP_ROOT, 'public', savedDir))) {
-        // 保存先ディレクトリが無い場合は作成
-        fs.mkdirSync(path.join(APP_ROOT, 'public', savedDir), { recursive: true, mode: 0o777 });
-      }
-      filePath = `public/${savedDir}${saveFilename}`;
-      // URLパス
-      urlPath = `/${savedDir}${saveFilename}`;
-      // mime type
-      fileMimetype = parameters.file_mimetype;
-
-      // メモリ上にあるファイルをサーバーパスへ移動させる
-      // ファイル保存
-      const decode = Buffer.from(parameters.file_content, "base64");
-      // ファイル出力
-      fs.writeFileSync(filePath, decode);
-    }
+    // メモリ上にあるファイルをサーバーパスへ移動させる
+    // ファイル保存
+    const decode = Buffer.from(parameters.file_content, "base64");
+    // ファイル出力
+    fs.writeFileSync(filePath, decode);
   }
 
   // ---
