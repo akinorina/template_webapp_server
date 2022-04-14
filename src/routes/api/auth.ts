@@ -62,8 +62,10 @@ router.post('/regist', async function (req, res, next) {
 
   // (2). 生成データ作成
   const user = new User();
-  user.name = parameters.name;
-  user.nameKana = parameters.nameKana;
+  user.familyName = parameters.familyName;
+  user.firstName = parameters.firstName;
+  user.familyNameKana = parameters.familyNameKana;
+  user.firstNameKana = parameters.firstNameKana;
   user.email = parameters.email;
   user.password = parameters.password;
   user.userType = parameters.userType;

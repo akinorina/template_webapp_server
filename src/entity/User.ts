@@ -12,11 +12,17 @@ export class User extends BaseEntity {
   @PrimaryGeneratedColumn({ comment: 'ユーザーID' })
   id: number = 0;
 
-  @Column({ default: '', comment: '氏名' })
-  name: string = "";
+  @Column({ default: '', comment: '氏名(姓)' })
+  familyName: string = "";
 
-  @Column({ default: '', comment: '氏名かな' })
-  nameKana: string = "";
+  @Column({ default: '', comment: '氏名(名)' })
+  firstName: string = "";
+
+  @Column({ default: '', comment: '氏名(姓)かな' })
+  familyNameKana: string = "";
+
+  @Column({ default: '', comment: '氏名(名)かな' })
+  firstNameKana: string = "";
 
   @Column({ default: '', comment: 'Emailアドレス' })
   email: string = "";

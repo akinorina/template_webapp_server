@@ -6,8 +6,10 @@
 
   <table class="list">
   <tr><th>id</th><td>{{ User.id }}</td></tr>
-  <tr><th>氏名</th><td>{{ User.name }}</td></tr>
-  <tr><th>かな</th><td>{{ User.nameKana }}</td></tr>
+  <tr><th>氏名(姓)</th><td>{{ User.familyName }}</td></tr>
+  <tr><th>氏名(名)</th><td>{{ User.firstName }}</td></tr>
+  <tr><th>かな(姓)</th><td>{{ User.familyNameKana }}</td></tr>
+  <tr><th>かな(名)</th><td>{{ User.firstNameKana }}</td></tr>
   <tr><th>emailアドレス</th><td>{{ User.email }}</td></tr>
   <tr><th>ユーザータイプ</th><td>{{ User.userType }}</td></tr>
   </table>

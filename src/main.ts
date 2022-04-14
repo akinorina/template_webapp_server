@@ -120,7 +120,13 @@ try {
 
       // render the error page
       res.status(err.status || 500);
-      res.render('error');
+      if (req.url.match(/^\/api/)) {
+        // APIアクセス レスポンス
+        res.json({ status: 'failure', error: err });
+      } else {
+        // Webアクセス レスポンス
+        res.render('error');
+      }
     });
 
     // PORT

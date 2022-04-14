@@ -123,8 +123,10 @@ router.post('/', isAuthenticated, async function (req: express.Request, res: exp
   // 生成データ作成
   // create it.
   const user = new User()
-  user.name = parameters.name
-  user.nameKana = parameters.nameKana
+  user.familyName = parameters.familyName
+  user.firstName = parameters.firstName
+  user.familyNameKana = parameters.familyNameKana
+  user.firstNameKana = parameters.firstNameKana
   user.email = parameters.email
   user.password = parameters.password
   user.userType = parameters.userType
@@ -182,12 +184,15 @@ router.post('/:id', isAuthenticated, async function (req: express.Request, res: 
   // consoleLogger.debug('user: ', user)
 
   // データ新規保存
-  user.name = parameters.name
-  user.nameKana = parameters.nameKana
+  user.familyName = parameters.familyName
+  user.firstName = parameters.firstName
+  user.familyNameKana = parameters.familyNameKana
+  user.firstNameKana = parameters.firstNameKana
   user.email = parameters.email
   user.password = parameters.password
   user.userType = parameters.userType
   // consoleLogger.debug('user: ', user)
+  // 保存
   const savedUser = await dataSource.getRepository(User).save(user)
   // consoleLogger.debug('savedUser: ', savedUser)
 

@@ -6,8 +6,8 @@
 
   <table class="list">
   <tr><th>id</th><td>{{ User.id }}</td></tr>
-  <tr><th>氏名</th><td>{{ User.name }}</td></tr>
-  <tr><th>かな</th><td>{{ User.nameKana }}</td></tr>
+  <tr><th>氏名</th><td>{{ User.familyName }} {{ User.firstName }}</td></tr>
+  <tr><th>かな</th><td>{{ User.familyNameKana }} {{ User.firstNameKana }}</td></tr>
   <tr><th>emailアドレス</th><td>{{ User.email }}</td></tr>
   <tr><th>ユーザータイプ</th><td>{{ User.userType }}</td></tr>
   </table>

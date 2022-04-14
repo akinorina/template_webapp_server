@@ -87,8 +87,10 @@ usersRouter.post('/', isAuthenticatedForApi, async function (req, res, next) {
 
   // (2). 生成データ作成
   const user = new User();
-  user.name = parameters.name;
-  user.nameKana = parameters.nameKana;
+  user.familyName = parameters.familyName;
+  user.firstName = parameters.firstName;
+  user.familyNameKana = parameters.familyNameKana;
+  user.firstNameKana = parameters.firstNameKana;
   user.email = parameters.email;
   user.password = parameters.password;
   user.userType = parameters.userType;
@@ -145,11 +147,17 @@ usersRouter.put('/:id', isAuthenticatedForApi, async function (req, res, next) {
     const resData = { status: 'failure', data: null };
     res.json(resData);
   } else {
-    if (parameters.name !== undefined) {
-      user.name = parameters.name;
+    if (parameters.familyName !== undefined) {
+      user.familyName = parameters.familyName;
     }
-    if (parameters.nameKana !== undefined) {
-      user.nameKana = parameters.nameKana;
+    if (parameters.firstName !== undefined) {
+      user.firstName = parameters.firstName;
+    }
+    if (parameters.familyNameKana !== undefined) {
+      user.familyNameKana = parameters.familyNameKana;
+    }
+    if (parameters.firstNameKana !== undefined) {
+      user.firstNameKana = parameters.firstNameKana;
     }
     if (parameters.email !== undefined) {
       user.email = parameters.email;
@@ -193,11 +201,17 @@ usersRouter.patch('/:id', isAuthenticatedForApi, async function (req, res, next)
     const resData = { status: 'failure', data: null };
     res.json(resData);
   } else {
-    if (parameters.name !== undefined) {
-      user.name = parameters.name;
+    if (parameters.familyName !== undefined) {
+      user.familyName = parameters.familyName;
     }
-    if (parameters.nameKana !== undefined) {
-      user.nameKana = parameters.nameKana;
+    if (parameters.firstName !== undefined) {
+      user.firstName = parameters.firstName;
+    }
+    if (parameters.familyNameKana !== undefined) {
+      user.familyNameKana = parameters.familyNameKana;
+    }
+    if (parameters.firstNameKana !== undefined) {
+      user.firstNameKana = parameters.firstNameKana;
     }
     if (parameters.email !== undefined) {
       user.email = parameters.email;
